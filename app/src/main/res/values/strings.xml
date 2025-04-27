@@ -1,3 +1,25 @@
 <resources>
-    <string name="app_name">JapHelper</string>
+    <string name="app_name">Japanese Naturalness Check</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="api_mode_label">API Mode</string>
+    <string name="free_api_label">Free API (Default endpoint)</string>
+    <string name="paid_api_label">Paid API (Provide your own API key)</string>
+    <string name="api_endpoint_label">API Endpoint URL</string>
+    <string name="api_endpoint_hint">https://api.openai.com</string>
+    <string name="api_key_label">API Key (for paid API)</string>
+    <string name="api_key_hint">Your API key</string>
+    <string name="temperature_label">Temperature</string>
+    <string name="temperature_description">Lower values make output more deterministic, higher values make it more creative</string>
+    <string name="save_settings">Save Settings</string>
+
+    <!-- Suggestion Overlay -->
+    <string name="loading_suggestions">Analyzing text...</string>
+    <string name="text_is_natural">The text sounds natural!</string>
+    <string name="text_improvements">Suggested improvements:</string>
+    <string name="copy_improved_text">Copy</string>
+    <string name="close_dialog">Close</string>
+    <string name="error_checking_text">Error checking text</string>
+    <string name="settings_not_configured">Please configure the app settings first</string>
 </resources>
