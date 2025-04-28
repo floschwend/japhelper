@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.japanesenaturalnesscheck"
+    namespace = "com.flo.japhelper"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.japanesenaturalnesscheck"
+        applicationId = "com.flo.japhelper"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
@@ -40,14 +40,25 @@ android {
 
 
 dependencies {
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.ui)
+    implementation(libs.ui.graphics)
+    implementation(libs.ui.tooling.preview)
+    implementation(libs.material3)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.ui.test.junit4)
+    debugImplementation(libs.ui.tooling)
+    debugImplementation(libs.ui.test.manifest)
+
     // Android Core
-    implementation(libs.androidx.core.ktx.v1120)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
 
     // Lifecycle components
-    implementation(libs.androidx.lifecycle.runtime.ktx.v262)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     // Retrofit for API calls
