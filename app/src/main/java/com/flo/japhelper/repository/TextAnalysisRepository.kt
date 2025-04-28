@@ -3,7 +3,6 @@ package com.flo.japhelper.repository
 import com.flo.japhelper.model.LlmApiResponse
 import com.flo.japhelper.network.ChatCompletionRequest
 import com.flo.japhelper.network.LlmApiService
-import com.flo.japhelper.network.Message
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -11,6 +10,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import com.flo.japhelper.network.LoggingInterceptor
 import okhttp3.OkHttpClient
+import java.util.regex.Pattern
 
 class TextAnalysisRepository(
     private val baseUrl: String,
@@ -38,24 +38,25 @@ class TextAnalysisRepository(
         return withContext(Dispatchers.IO) {
             try {
                 val prompt = buildPrompt(text)
-                val authorization = if (apiKey.isNullOrBlank()) null else "Bearer $apiKey"
+                val authorization = "Bearer $apiKey"
                 val request = ChatCompletionRequest(
                     prompt = prompt,
                     temperature = temperature
                 )
 
                 val response = apiService.sendTextForAnalysis(
-                    apiUrl = "${"$baseUrl/"}completions",
+                    apiUrl = "${baseUrl}/completions",
                     authorization = authorization,
                     request = request
                 )
 
                 if (response.isSuccessful) {
                     val chatResponse = response.body()
-                    val jsonContent = chatResponse?.choices?.firstOrNull()?.message?.content
+                    val jsonContent = chatResponse?.choices?.firstOrNull()?.text
+                    val jsonString = extractJsonFromMarkdown(jsonContent)
 
-                    if (jsonContent != null) {
-                        val llmApiResponse = gson.fromJson(jsonContent, LlmApiResponse::class.java)
+                    if (jsonString != null) {
+                        val llmApiResponse = gson.fromJson(jsonString, LlmApiResponse::class.java)
                         Result.success(llmApiResponse)
                     } else {
                         Result.failure(Exception("Invalid API response"))
@@ -84,5 +85,17 @@ class TextAnalysisRepository(
             Here is the text to check:
             $text
         """.trimIndent()
+    }
+
+    // Helper function to extract JSON from markdown
+    fun extractJsonFromMarkdown(text: String?): String? {
+        if(text == null) return null;
+        val pattern = Pattern.compile("```json\\n(.*?)\\n```", Pattern.DOTALL)
+        val matcher = pattern.matcher(text)
+        return if (matcher.find()) {
+            matcher.group(1)
+        } else {
+            text // If no markdown, assume it's plain JSON
+        }
     }
 }
