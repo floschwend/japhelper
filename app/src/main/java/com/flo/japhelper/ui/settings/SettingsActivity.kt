@@ -39,7 +39,6 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun initViews() {
         apiModeRadioGroup = findViewById(R.id.apiModeRadioGroup)
-        freeApiRadio = findViewById(R.id.freeApiRadio)
         paidApiRadio = findViewById(R.id.paidApiRadio)
         apiEndpointInput = findViewById(R.id.apiEndpointInput)
         apiKeyInput = findViewById(R.id.apiKeyInput)
@@ -50,15 +49,10 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun loadSavedSettings() {
         // Set API mode
-        val apiMode = sharedPrefsHelper.getApiMode()
-        if (apiMode == SharedPrefsHelper.API_MODE_FREE) {
-            freeApiRadio.isChecked = true
-        } else {
-            paidApiRadio.isChecked = true
-        }
+        paidApiRadio.isChecked = true
 
         // Update UI based on API mode
-        updateUiForApiMode(apiMode)
+        updateUiForApiMode(SharedPrefsHelper.API_MODE_PAID)
 
         // Load API endpoint
         apiEndpointInput.setText(sharedPrefsHelper.getApiEndpoint())
@@ -76,12 +70,8 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         apiModeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
-            val apiMode = if (checkedId == R.id.freeApiRadio) {
-                SharedPrefsHelper.API_MODE_FREE
-            } else {
-                SharedPrefsHelper.API_MODE_PAID
-            }
-            updateUiForApiMode(apiMode)
+            SharedPrefsHelper.API_MODE_PAID
+            updateUiForApiMode(SharedPrefsHelper.API_MODE_PAID)
         }
 
         temperatureSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -113,11 +103,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun saveSettings() {
-        val apiMode = if (freeApiRadio.isChecked) {
-            SharedPrefsHelper.API_MODE_FREE
-        } else {
-            SharedPrefsHelper.API_MODE_PAID
-        }
+        SharedPrefsHelper.API_MODE_PAID
 
         val apiEndpoint = apiEndpointInput.text.toString().trim()
         if (apiEndpoint.isEmpty()) {
@@ -126,7 +112,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         val apiKey = apiKeyInput.text.toString().trim()
-        if (apiMode == SharedPrefsHelper.API_MODE_PAID && apiKey.isEmpty()) {
+        if (apiKey.isEmpty()) {
             Toast.makeText(this, "API key cannot be empty in paid mode", Toast.LENGTH_SHORT).show()
             return
         }
@@ -134,7 +120,7 @@ class SettingsActivity : AppCompatActivity() {
         val temperature = temperatureSeekBar.progress / 100f
 
         // Save settings
-        sharedPrefsHelper.setApiMode(apiMode)
+        sharedPrefsHelper.setApiMode(SharedPrefsHelper.API_MODE_PAID)
         sharedPrefsHelper.setApiEndpoint(apiEndpoint)
         sharedPrefsHelper.setApiKey(apiKey.ifEmpty { null })
         sharedPrefsHelper.setTemperature(temperature)

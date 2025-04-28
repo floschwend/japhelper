@@ -34,12 +34,6 @@
             android:orientation="vertical">
 
             <RadioButton
-                android:id="@+id/freeApiRadio"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/free_api_label"/>
-
-            <RadioButton
                 android:id="@+id/paidApiRadio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

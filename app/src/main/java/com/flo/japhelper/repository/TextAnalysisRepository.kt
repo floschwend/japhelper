@@ -9,6 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import com.flo.japhelper.network.LoggingInterceptor
+import okhttp3.OkHttpClient
 
 class TextAnalysisRepository(
     private val baseUrl: String,
@@ -18,7 +20,13 @@ class TextAnalysisRepository(
     private val gson = Gson()
 
     init {
+        val loggingInterceptor = LoggingInterceptor()
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .build()
+
         val retrofit = Retrofit.Builder()
+            .client(okHttpClient)
             .baseUrl(if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -32,12 +40,12 @@ class TextAnalysisRepository(
                 val prompt = buildPrompt(text)
                 val authorization = if (apiKey.isNullOrBlank()) null else "Bearer $apiKey"
                 val request = ChatCompletionRequest(
-                    messages = listOf(Message("user", prompt)),
+                    prompt = prompt,
                     temperature = temperature
                 )
 
                 val response = apiService.sendTextForAnalysis(
-                    apiUrl = "${if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"}v1/chat/completions",
+                    apiUrl = "${"$baseUrl/"}completions",
                     authorization = authorization,
                     request = request
                 )

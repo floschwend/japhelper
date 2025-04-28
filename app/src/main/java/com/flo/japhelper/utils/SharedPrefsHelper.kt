@@ -19,11 +19,10 @@ class SharedPrefsHelper(context: Context) {
         private const val KEY_API_KEY = "api_key"
 
         // API modes
-        const val API_MODE_FREE = "free"
         const val API_MODE_PAID = "paid"
 
         // Default values
-        const val DEFAULT_FREE_API_ENDPOINT = "https://api.openai.com"
+        const val DEFAULT_FREE_API_ENDPOINT = "https://openrouter.ai"
         const val DEFAULT_TEMPERATURE = 0.7
     }
 
@@ -43,7 +42,7 @@ class SharedPrefsHelper(context: Context) {
 
     // API Mode (Free or Paid)
     fun getApiMode(): String {
-        return prefs.getString(KEY_API_MODE, API_MODE_FREE) ?: API_MODE_FREE
+        return API_MODE_PAID
     }
 
     fun setApiMode(mode: String) {
@@ -82,7 +81,6 @@ class SharedPrefsHelper(context: Context) {
         val apiMode = getApiMode()
 
         return when (apiMode) {
-            API_MODE_FREE -> getApiEndpoint().isNotEmpty()
             API_MODE_PAID -> getApiEndpoint().isNotEmpty() && !getApiKey().isNullOrEmpty()
             else -> false
         }
