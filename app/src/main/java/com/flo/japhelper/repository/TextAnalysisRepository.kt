@@ -81,6 +81,8 @@ class TextAnalysisRepository(
             { "natural": false, "suggestions": [ { "improved_text": "Example of more natural Japanese", "explanation": "Explain briefly why this is better." } ] }
 
             Respond only with pure JSON. No explanation outside the JSON.
+            
+            You absolutely MUST NOT respond in any other way. 
 
             Here is the text to check:
             $text
@@ -88,8 +90,8 @@ class TextAnalysisRepository(
     }
 
     // Helper function to extract JSON from markdown
-    fun extractJsonFromMarkdown(text: String?): String? {
-        if(text == null) return null;
+    private fun extractJsonFromMarkdown(text: String?): String? {
+        if(text == null) return null
         val pattern = Pattern.compile("```json\\n(.*?)\\n```", Pattern.DOTALL)
         val matcher = pattern.matcher(text)
         return if (matcher.find()) {

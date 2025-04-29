@@ -20,17 +20,31 @@
             </intent-filter>
         </activity>
 
+        <activity-alias
+            android:name="com.flo.japhelper.context.NaturalContextMenuAction"
+            android:label="@string/process_text"
+            android:enabled="true"
+            android:targetActivity=".service.TextProcessActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity-alias>
         <activity
             android:name=".service.TextProcessActivity"
+            android:label="@string/process_text"
             android:theme="@style/Theme.Transparent"
             android:exported="true"
-            android:label="@string/process_text"> <intent-filter>
-            <action android:name="android.intent.action.PROCESS_TEXT" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <data android:mimeType="text/plain" />
-            <data android:mimeType="application/x-www-form-urlencoded" />
-            <data android:mimeType="text/html" />
-        </intent-filter>
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            >
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
         </activity>
 
     </application>
