@@ -1,5 +1,3 @@
-
-
 /*
  Copyright (c) 2020 David Allison <davidallisongithub@gmail.com>
 
