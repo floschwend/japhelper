@@ -73,12 +73,14 @@ class TextProcessActivity : AppCompatActivity() {
                         response = result.getOrNull(),
                         originalText = selectedText
                     )
+                    resultDialog.setOnDismissListener { finish() } // Finish after result is dismissed
                     resultDialog.show(supportFragmentManager, "result_dialog")
                 } else {
                     // Show error dialog
                     val errorDialog = SuggestionOverlayDialog.newInstance(
                         error = result.exceptionOrNull()?.message ?: getString(R.string.error_checking_text)
                     )
+                    errorDialog.setOnDismissListener { finish() } // Finish after error is dismissed
                     errorDialog.show(supportFragmentManager, "error_dialog")
                 }
             } catch (e: Exception) {
@@ -89,6 +91,7 @@ class TextProcessActivity : AppCompatActivity() {
                 val errorDialog = SuggestionOverlayDialog.newInstance(
                     error = e.message ?: getString(R.string.error_checking_text)
                 )
+                errorDialog.setOnDismissListener { finish() } // Finish after error is dismissed
                 errorDialog.show(supportFragmentManager, "error_dialog")
             }
         }
@@ -103,7 +106,7 @@ class TextProcessActivity : AppCompatActivity() {
             // Open settings activity
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
-            finish()
+            finish() // Finish after navigating to settings
         }
         dialog.show(supportFragmentManager, "settings_dialog")
     }
