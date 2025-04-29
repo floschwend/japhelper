@@ -13,12 +13,15 @@ import kotlinx.coroutines.launch
 
 class TextProcessActivity : AppCompatActivity() {
     private lateinit var sharedPrefsHelper: SharedPrefsHelper
+    private var isReadOnly = false
+    private var originalText: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Using transparent theme - no need to set content view
 
         sharedPrefsHelper = SharedPrefsHelper(this)
+        isReadOnly = intent.getBooleanExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, false)
 
         // Check if settings are configured
         if (!sharedPrefsHelper.isSettingsConfigured()) {
@@ -37,9 +40,9 @@ class TextProcessActivity : AppCompatActivity() {
 
     private fun handleIntent(intent: Intent) {
         // Extract the text from the intent
-        val selectedText = intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)?.toString()
+        originalText = intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)?.toString()
 
-        if (selectedText.isNullOrBlank()) {
+        if (originalText.isNullOrBlank()) {
             finish()
             return
         }
@@ -62,7 +65,7 @@ class TextProcessActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val result = repository.analyzeJapaneseText(selectedText, temperature)
+                val result = repository.analyzeJapaneseText(originalText!!, temperature)
 
                 // Dismiss loading dialog
                 loadingDialog.dismiss()
@@ -71,16 +74,21 @@ class TextProcessActivity : AppCompatActivity() {
                     // Show results dialog
                     val resultDialog = SuggestionOverlayDialog.newInstance(
                         response = result.getOrNull(),
-                        originalText = selectedText
+                        originalText = originalText,
+                        showReplace = !isReadOnly // Only show replace button if we can modify
                     )
-                    resultDialog.setOnDismissListener { finish() } // Finish after result is dismissed
+                    resultDialog.setOnDismissListener { finish() } // Finish if dismissed
+                    resultDialog.setOnReplaceClickListener { modifiedText ->
+                        replaceTextAndFinish(modifiedText)
+                    }
                     resultDialog.show(supportFragmentManager, "result_dialog")
                 } else {
                     // Show error dialog
                     val errorDialog = SuggestionOverlayDialog.newInstance(
-                        error = result.exceptionOrNull()?.message ?: getString(R.string.error_checking_text)
+                        error = result.exceptionOrNull()?.message
+                            ?: getString(R.string.error_checking_text)
                     )
-                    errorDialog.setOnDismissListener { finish() } // Finish after error is dismissed
+                    errorDialog.setOnDismissListener { finish() } // Finish if dismissed
                     errorDialog.show(supportFragmentManager, "error_dialog")
                 }
             } catch (e: Exception) {
@@ -91,10 +99,19 @@ class TextProcessActivity : AppCompatActivity() {
                 val errorDialog = SuggestionOverlayDialog.newInstance(
                     error = e.message ?: getString(R.string.error_checking_text)
                 )
-                errorDialog.setOnDismissListener { finish() } // Finish after error is dismissed
+                errorDialog.setOnDismissListener { finish() } // Finish if dismissed
                 errorDialog.show(supportFragmentManager, "error_dialog")
             }
         }
+    }
+
+    private fun replaceTextAndFinish(modifiedText: String) {
+        if (!isReadOnly) {
+            val resultIntent = Intent()
+            resultIntent.putExtra(Intent.EXTRA_PROCESS_TEXT, modifiedText)
+            setResult(RESULT_OK, resultIntent)
+        }
+        finish()
     }
 
     private fun showSettingsNotConfigured() {

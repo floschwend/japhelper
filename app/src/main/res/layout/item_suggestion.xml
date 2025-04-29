@@ -25,12 +25,29 @@
         android:padding="4dp"
         tools:text="Explanation why this is better" />
 
-    <Button
-        android:id="@+id/copyButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/copy_improved_text"
-        android:layout_gravity="end"
-        style="@style/Widget.AppCompat.Button.Small" />
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/replaceButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/replace"
+            android:layout_gravity="end"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/copyButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/copy_improved_text"
+            android:layout_gravity="end"
+            style="@style/Widget.AppCompat.Button.Small" />
+
+    </LinearLayout>
 
 </LinearLayout>

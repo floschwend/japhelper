@@ -20,6 +20,7 @@
     <string name="text_is_natural">The text sounds natural!</string>
     <string name="text_improvements">Suggested improvements:</string>
     <string name="copy_improved_text">Copy</string>
+    <string name="replace">Replace</string>
     <string name="close_dialog">Close</string>
     <string name="error_checking_text">Error checking text</string>
     <string name="settings_not_configured">Please configure the app settings first</string>

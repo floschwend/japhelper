@@ -21,6 +21,7 @@ import com.flo.japhelper.model.Suggestion
 
 class SuggestionOverlayDialog : DialogFragment() {
     private var onDismissListener: (() -> Unit)? = null
+    private var onReplaceClickListener: ((String) -> Unit)? = null
 
     private lateinit var loadingView: ProgressBar
     private lateinit var naturalTextView: TextView
@@ -34,12 +35,14 @@ class SuggestionOverlayDialog : DialogFragment() {
         private const val ARG_RESPONSE = "response"
         private const val ARG_ORIGINAL_TEXT = "original_text"
         private const val ARG_ERROR = "error"
+        private const val ARG_SHOW_REPLACE = "show_replace"
 
         fun newInstance(
             isLoading: Boolean = false,
             response: LlmApiResponse? = null,
             originalText: String? = null,
-            error: String? = null
+            error: String? = null,
+            showReplace: Boolean = false
         ): SuggestionOverlayDialog {
             val dialog = SuggestionOverlayDialog()
             val args = Bundle().apply {
@@ -53,6 +56,7 @@ class SuggestionOverlayDialog : DialogFragment() {
                 if (error != null) {
                     putString(ARG_ERROR, error)
                 }
+                putBoolean(ARG_SHOW_REPLACE, showReplace)
             }
             dialog.arguments = args
             return dialog
@@ -112,9 +116,10 @@ class SuggestionOverlayDialog : DialogFragment() {
         // Process response
         val response = args.getParcelable<LlmApiResponse>(ARG_RESPONSE)
         val originalText = args.getString(ARG_ORIGINAL_TEXT)
+        val showReplace = args.getBoolean(ARG_SHOW_REPLACE, false)
 
         if (response != null && originalText != null) {
-            showResponseState(response, originalText)
+            showResponseState(response, originalText, showReplace)
         } else {
             showErrorState(getString(R.string.error_checking_text))
         }
@@ -138,7 +143,7 @@ class SuggestionOverlayDialog : DialogFragment() {
         errorTextView.text = errorMessage
     }
 
-    private fun showResponseState(response: LlmApiResponse, originalText: String) {
+    private fun showResponseState(response: LlmApiResponse, originalText: String, showReplace: Boolean) {
         loadingView.isVisible = false
         errorTextView.isVisible = false
 
@@ -161,18 +166,19 @@ class SuggestionOverlayDialog : DialogFragment() {
 
             // Add suggestion views
             for (suggestion in response.suggestions) {
-                addSuggestionView(suggestion, originalText)
+                addSuggestionView(suggestion, originalText, showReplace)
             }
         }
     }
 
-    private fun addSuggestionView(suggestion: Suggestion, originalText: String) {
+    private fun addSuggestionView(suggestion: Suggestion, originalText: String, showReplace: Boolean) {
         val inflater = LayoutInflater.from(requireContext())
         val suggestionView = inflater.inflate(R.layout.item_suggestion, suggestionsContainer, false)
 
         val improvedTextView = suggestionView.findViewById<TextView>(R.id.improvedTextView)
         val explanationView = suggestionView.findViewById<TextView>(R.id.explanationView)
         val copyButton = suggestionView.findViewById<Button>(R.id.copyButton)
+        val replaceButton = suggestionView.findViewById<Button>(R.id.replaceButton)
 
         // Set the text
         improvedTextView.text = suggestion.improvedText
@@ -181,6 +187,17 @@ class SuggestionOverlayDialog : DialogFragment() {
         // Set copy button listener
         copyButton.setOnClickListener {
             copyToClipboard(suggestion.improvedText)
+        }
+
+        // Set replace button listener
+        if (showReplace) {
+            replaceButton.setOnClickListener {
+                onReplaceClickListener?.invoke(suggestion.improvedText)
+                dismiss()
+            }
+            replaceButton.isVisible = true
+        } else {
+            replaceButton.isVisible = false
         }
 
         // Add to container
@@ -197,6 +214,10 @@ class SuggestionOverlayDialog : DialogFragment() {
 
     fun setOnDismissListener(listener: () -> Unit) {
         onDismissListener = listener
+    }
+
+    fun setOnReplaceClickListener(listener: (String) -> Unit) {
+        onReplaceClickListener = listener
     }
 
     override fun onDismiss(dialog: android.content.DialogInterface) {
