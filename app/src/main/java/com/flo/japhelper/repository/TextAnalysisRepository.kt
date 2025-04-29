@@ -34,8 +34,15 @@ class TextAnalysisRepository(
         apiService = retrofit.create(LlmApiService::class.java)
     }
 
-    suspend fun analyzeJapaneseText(text: String, temperature: Double = 0.7): Result<LlmApiResponse> {
-        return withContext(Dispatchers.IO) {
+    suspend fun analyzeJapaneseText(
+        text: String,
+        temperature: Double = 0.7,
+        maxRetries: Int = 2
+    ): Result<LlmApiResponse> {
+        var retryCount = 0
+        var lastError: Exception? = null
+
+        while (retryCount <= maxRetries) {
             try {
                 val prompt = buildPrompt(text)
                 val authorization = "Bearer $apiKey"
@@ -57,17 +64,24 @@ class TextAnalysisRepository(
 
                     if (jsonString != null) {
                         val llmApiResponse = gson.fromJson(jsonString, LlmApiResponse::class.java)
-                        Result.success(llmApiResponse)
+                        return Result.success(llmApiResponse)
                     } else {
-                        Result.failure(Exception("Invalid API response"))
+                        lastError = Exception("Invalid API response: Could not parse JSON")
+                        // Retry if jsonString is invalid
                     }
                 } else {
-                    Result.failure(Exception("API error: ${response.code()} ${response.message()}"))
+                    lastError = Exception("API error: ${response.code()} ${response.message()}")
+                    // Retry if response is not successful
                 }
             } catch (e: Exception) {
-                Result.failure(e)
+                lastError = e
+                // Retry if an exception happens
             }
+
+            retryCount++
         }
+
+        return Result.failure(lastError ?: Exception("Unknown error after multiple retries"))
     }
 
     private fun buildPrompt(text: String): String {
