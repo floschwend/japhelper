@@ -31,7 +31,8 @@ import java.util.regex.Pattern
 
 class TextAnalysisRepository(
     private val baseUrl: String,
-    private val apiKey: String?
+    private val apiKey: String,
+    private val apiModel: String
 ) {
     private val apiService: LlmApiService
     private val gson = Gson()
@@ -64,6 +65,7 @@ class TextAnalysisRepository(
                 val prompt = buildPrompt(text)
                 val authorization = "Bearer $apiKey"
                 val request = ChatCompletionRequest(
+                    model = apiModel,
                     prompt = prompt,
                     temperature = temperature
                 )

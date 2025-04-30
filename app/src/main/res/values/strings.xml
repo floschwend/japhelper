@@ -4,13 +4,12 @@
 
     <!-- Settings Screen -->
     <string name="settings_title">Settings</string>
-    <string name="api_mode_label">API Mode</string>
-    <string name="free_api_label">Free API (Default endpoint)</string>
-    <string name="paid_api_label">Paid API (Provide your own API key)</string>
     <string name="api_endpoint_label">API Endpoint URL</string>
     <string name="api_endpoint_hint">https://api.openai.com</string>
-    <string name="api_key_label">API Key (for paid API)</string>
+    <string name="api_key_label">API Key</string>
     <string name="api_key_hint">Your API key</string>
+    <string name="api_model_label">Model</string>
+    <string name="api_model_hint">Name of the model</string>
     <string name="temperature_label">Temperature</string>
     <string name="temperature_description">Lower values make output more deterministic, higher values make it more creative</string>
     <string name="save_settings">Save Settings</string>

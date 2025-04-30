@@ -35,7 +35,7 @@ interface LlmApiService {
 }
 
 data class ChatCompletionRequest(
-    val model: String = "deepseek/deepseek-chat-v3-0324:free",
+    val model: String,
     val prompt: String,
     val temperature: Double = 0.7
 )

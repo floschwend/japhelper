@@ -21,6 +21,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import androidx.core.content.edit
 
 class SharedPrefsHelper(context: Context) {
     companion object {
@@ -28,18 +29,16 @@ class SharedPrefsHelper(context: Context) {
         private const val ENCRYPTED_PREFS_NAME = "encrypted_japanese_naturalness_check_prefs"
 
         // Regular preferences keys
-        private const val KEY_API_MODE = "api_mode"
+        private const val KEY_API_MODEL = "api_model"
         private const val KEY_API_ENDPOINT = "api_endpoint"
         private const val KEY_TEMPERATURE = "temperature"
 
         // Encrypted preferences keys
         private const val KEY_API_KEY = "api_key"
 
-        // API modes
-        const val API_MODE_PAID = "paid"
-
         // Default values
         const val DEFAULT_FREE_API_ENDPOINT = "https://openrouter.ai"
+        const val DEFAULT_MODEL = "deepseek/deepseek-chat-v3-0324:free"
         const val DEFAULT_TEMPERATURE = 0.7
     }
 
@@ -57,13 +56,13 @@ class SharedPrefsHelper(context: Context) {
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
-    // API Mode (Free or Paid)
-    fun getApiMode(): String {
-        return API_MODE_PAID
+    // API Model
+    fun getApiModel(): String {
+        return prefs.getString(KEY_API_MODEL, DEFAULT_MODEL) ?: DEFAULT_MODEL
     }
 
-    fun setApiMode(mode: String) {
-        prefs.edit().putString(KEY_API_MODE, mode).apply()
+    fun setApiModel(model: String) {
+        prefs.edit { putString(KEY_API_MODEL, model) }
     }
 
     // API Endpoint
@@ -72,16 +71,16 @@ class SharedPrefsHelper(context: Context) {
     }
 
     fun setApiEndpoint(endpoint: String) {
-        prefs.edit().putString(KEY_API_ENDPOINT, endpoint).apply()
+        prefs.edit { putString(KEY_API_ENDPOINT, endpoint) }
     }
 
     // API Key (Encrypted)
-    fun getApiKey(): String? {
-        return encryptedPrefs.getString(KEY_API_KEY, null)
+    fun getApiKey(): String {
+        return encryptedPrefs.getString(KEY_API_KEY, null) ?: ""
     }
 
-    fun setApiKey(apiKey: String?) {
-        encryptedPrefs.edit().putString(KEY_API_KEY, apiKey).apply()
+    fun setApiKey(apiKey: String) {
+        encryptedPrefs.edit { putString(KEY_API_KEY, apiKey) }
     }
 
     // Temperature
@@ -90,16 +89,11 @@ class SharedPrefsHelper(context: Context) {
     }
 
     fun setTemperature(temperature: Float) {
-        prefs.edit().putFloat(KEY_TEMPERATURE, temperature).apply()
+        prefs.edit { putFloat(KEY_TEMPERATURE, temperature) }
     }
 
     // Check if settings are configured
     fun isSettingsConfigured(): Boolean {
-        val apiMode = getApiMode()
-
-        return when (apiMode) {
-            API_MODE_PAID -> getApiEndpoint().isNotEmpty() && !getApiKey().isNullOrEmpty()
-            else -> false
-        }
+        return getApiEndpoint().isNotEmpty() && getApiKey().isNotEmpty() && getApiModel().isNotEmpty()
     }
 }

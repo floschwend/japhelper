@@ -70,15 +70,12 @@ class TextProcessActivity : AppCompatActivity() {
 
         // Get API settings
         val apiEndpoint = sharedPrefsHelper.getApiEndpoint()
-        val apiKey = if (sharedPrefsHelper.getApiMode() == SharedPrefsHelper.API_MODE_PAID) {
-            sharedPrefsHelper.getApiKey()
-        } else {
-            null
-        }
+        val apiKey = sharedPrefsHelper.getApiKey()
+        val apiModel = sharedPrefsHelper.getApiModel()
         val temperature = sharedPrefsHelper.getTemperature().toDouble()
 
         // Create repository and send request
-        val repository = TextAnalysisRepository(apiEndpoint, apiKey)
+        val repository = TextAnalysisRepository(apiEndpoint, apiKey, apiModel)
 
         lifecycleScope.launch {
             try {
