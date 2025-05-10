@@ -34,22 +34,3 @@ interface LlmApiService {
     ): Response<ChatCompletionResponse>
 }
 
-data class ChatCompletionRequest(
-    val model: String,
-    val prompt: String,
-    val temperature: Double = 0.7
-)
-
-data class ChatCompletionResponse(
-    val id: String,
-    val `object`: String,
-    val created: Long,
-    val model: String,
-    val choices: List<Choice>
-)
-
-data class Choice(
-    val reasoning: String,
-    val text: String,
-    val finish_reason: String
-)
