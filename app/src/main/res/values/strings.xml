@@ -15,7 +15,7 @@
     <string name="save_settings">Save Settings</string>
 
     <!-- Suggestion Overlay -->
-    <string name="loading_suggestions">Analyzing text...</string>
+    <string name="loading_suggestions">Analyzing text…</string>
     <string name="text_is_natural">The text sounds natural!</string>
     <string name="text_improvements">Suggested improvements:</string>
     <string name="copy_improved_text">Copy</string>

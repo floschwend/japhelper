@@ -30,11 +30,3 @@ data class LlmApiResponse(
     val suggestions: List<Suggestion>
 ) : Parcelable
 
-@Parcelize
-data class Suggestion(
-    @SerializedName("improved_text")
-    val improvedText: String,
-
-    @SerializedName("explanation")
-    val explanation: String
-) : Parcelable
