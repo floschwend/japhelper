@@ -31,7 +31,7 @@ import com.flo.japhelper.network.Message
 class TextAnalysisRepository(
     private val baseUrl: String,
     private val apiKey: String?,
-    private val apiModel: String
+    private val apiModel: String,
 ) {
     private val apiService: LlmApiService
     private val gson = Gson()
@@ -51,8 +51,9 @@ class TextAnalysisRepository(
         apiService = retrofit.create(LlmApiService::class.java)
     }
 
-    suspend fun analyzeJapaneseText(
+    suspend fun analyzeText(
         text: String,
+        language: String,
         temperature: Double = 0.7,
         maxCorrectionAttempts: Int = 3 // Renamed for clarity
     ): Result<LlmApiResponse> {
@@ -61,8 +62,8 @@ class TextAnalysisRepository(
         val messages = mutableListOf<Message>()
 
         // Add the initial system message and user prompt
-        messages.add(Message(role = "system", content = buildSystemMessage()))
-        messages.add(Message(role = "user", content = buildPrompt(text)))
+        messages.add(Message(role = "system", content = buildSystemMessage(language)))
+        messages.add(Message(role = "user", content = buildPrompt(text, language)))
 
         while (correctionAttempt <= maxCorrectionAttempts) {
             try {
@@ -115,12 +116,14 @@ class TextAnalysisRepository(
         return Result.failure(lastError ?: Exception("Unknown error after multiple correction attempts"))
     }
 
-    private fun buildSystemMessage(): String {
+    private fun buildSystemMessage(language: String): String {
         return "\n" +
-                "You are a Japanese language naturalness checker. When given text, check if it sounds natural to native speakers. Also pay attention to mixing casual and polite speech."
+                "You are a $language language naturalness checker. " +
+                "When given text, check if it sounds natural to native speakers. " +
+                "Also pay attention to mixing casual and polite speech."
     }
 
-    private fun buildPrompt(text: String): String {
+    private fun buildPrompt(text: String, language: String): String {
         return """
             If it sounds natural, respond:
 
@@ -128,7 +131,7 @@ class TextAnalysisRepository(
 
             If it could be improved, respond:
 
-            { "natural": false, "suggestions": [ { "improved_text": "Example of more natural Japanese", "explanation": "Explain briefly (in English) why this is better." } ] }
+            { "natural": false, "suggestions": [ { "improved_text": "Example of more natural $language", "explanation": "Explain briefly (in English) why this is better." } ] }
 
             Respond only with pure JSON. No explanation outside the JSON. You absolutely MUST NOT respond in any other way.
 

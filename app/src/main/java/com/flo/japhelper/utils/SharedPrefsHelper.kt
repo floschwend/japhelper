@@ -32,6 +32,7 @@ class SharedPrefsHelper(context: Context) {
         private const val KEY_API_MODEL = "api_model"
         private const val KEY_API_ENDPOINT = "api_endpoint"
         private const val KEY_TEMPERATURE = "temperature"
+        private const val KEY_LANGUAGE = "language"
 
         // Encrypted preferences keys
         private const val KEY_API_KEY = "api_key"
@@ -39,6 +40,7 @@ class SharedPrefsHelper(context: Context) {
         // Default values
         const val DEFAULT_FREE_API_ENDPOINT = "https://openrouter.ai"
         const val DEFAULT_MODEL = "deepseek/deepseek-chat-v3-0324:free"
+        const val DEFAULT_LANGUAGE = "Japanese"
         const val DEFAULT_TEMPERATURE = 0.7
     }
 
@@ -55,6 +57,15 @@ class SharedPrefsHelper(context: Context) {
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
+
+    // Language
+    fun getLanguage(): String {
+        return prefs.getString(KEY_LANGUAGE, DEFAULT_LANGUAGE) ?: DEFAULT_LANGUAGE
+    }
+
+    fun setLanguage(model: String) {
+        prefs.edit { putString(KEY_LANGUAGE, model) }
+    }
 
     // API Model
     fun getApiModel(): String {

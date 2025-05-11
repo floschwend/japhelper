@@ -33,6 +33,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var apiEndpointInput: EditText
     private lateinit var apiKeyInput: EditText
     private lateinit var apiModelInput: EditText
+    private lateinit var languageInput: EditText
     private lateinit var temperatureSeekBar: SeekBar
     private lateinit var temperatureValueText: TextView
     private lateinit var saveButton: Button
@@ -52,6 +53,7 @@ class SettingsActivity : AppCompatActivity() {
         apiEndpointInput = findViewById(R.id.apiEndpointInput)
         apiKeyInput = findViewById(R.id.apiKeyInput)
         apiModelInput = findViewById(R.id.apiModelInput)
+        languageInput = findViewById(R.id.languageInput)
         temperatureSeekBar = findViewById(R.id.temperatureSeekBar)
         temperatureValueText = findViewById(R.id.temperatureValueText)
         saveButton = findViewById(R.id.saveButton)
@@ -63,6 +65,7 @@ class SettingsActivity : AppCompatActivity() {
         apiEndpointInput.setText(sharedPrefsHelper.getApiEndpoint())
         apiKeyInput.setText(sharedPrefsHelper.getApiKey())
         apiModelInput.setText(sharedPrefsHelper.getApiModel())
+        languageInput.setText(sharedPrefsHelper.getLanguage())
 
         // Load temperature
         val temperature = sharedPrefsHelper.getTemperature()
@@ -105,12 +108,17 @@ class SettingsActivity : AppCompatActivity() {
             return
         }
 
+        if (!validateFieldNotEmpty(languageInput, "Language")) {
+            return
+        }
+
         val temperature = temperatureSeekBar.progress / 100f
 
         // Save settings
         sharedPrefsHelper.setApiEndpoint(apiEndpointInput.getText().toString())
         sharedPrefsHelper.setApiKey(apiKeyInput.getText().toString())
         sharedPrefsHelper.setApiModel(apiModelInput.getText().toString())
+        sharedPrefsHelper.setLanguage(languageInput.getText().toString())
         sharedPrefsHelper.setTemperature(temperature)
 
         Toast.makeText(this, "Settings saved successfully", Toast.LENGTH_SHORT).show()

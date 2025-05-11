@@ -72,6 +72,7 @@ class TextProcessActivity : AppCompatActivity() {
         val apiEndpoint = sharedPrefsHelper.getApiEndpoint()
         val apiKey = sharedPrefsHelper.getApiKey()
         val apiModel = sharedPrefsHelper.getApiModel()
+        val language = sharedPrefsHelper.getLanguage()
         val temperature = sharedPrefsHelper.getTemperature().toDouble()
 
         // Create repository and send request
@@ -79,7 +80,7 @@ class TextProcessActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val result = repository.analyzeJapaneseText(originalText!!, temperature)
+                val result = repository.analyzeText(originalText!!,language, temperature)
 
                 // Dismiss loading dialog
                 loadingDialog.dismiss()
