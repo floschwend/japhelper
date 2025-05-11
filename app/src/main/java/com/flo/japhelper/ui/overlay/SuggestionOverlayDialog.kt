@@ -118,7 +118,7 @@ class SuggestionOverlayDialog : DialogFragment() {
         // Set close button listener
         sendErrorButton.setOnClickListener {
             val messages = arguments?.getParcelableArrayList<Message>(ARG_MESSAGES) ?: emptyList()
-            val msg = messages.joinToString("\r\n") { m -> "${m.role}: ${m.content}" }
+            val msg = messages.joinToString("\r\n===========\r\n") { m -> "${m.role}: ${m.content}" }
             sendEmail(requireContext(), "flo.schwend@gmail.com", "JapHelper Error", msg)
         }
 
