@@ -84,9 +84,10 @@ class TextAnalysisRepository(
                     val chatResponse = response.body()
                     // Access the message content from the chat completion response structure
                     val assistantMessageContent = chatResponse?.choices?.firstOrNull()?.message?.content
-                    val jsonString = extractJsonFromMarkdown(assistantMessageContent)
+                    var jsonString = extractJsonFromMarkdown(assistantMessageContent)
 
-                    if (jsonString != null) {
+
+                    if (jsonString != null && false) { // TODO: remove
                         // Successfully parsed JSON, return the result
                         val llmApiResponse = gson.fromJson(jsonString, LlmApiResponse::class.java)
                         return Result.success(llmApiResponse)

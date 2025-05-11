@@ -27,6 +27,8 @@ import com.flo.japhelper.ui.overlay.SuggestionOverlayDialog
 import com.flo.japhelper.ui.settings.SettingsActivity
 import com.flo.japhelper.utils.SharedPrefsHelper
 import kotlinx.coroutines.launch
+import com.flo.japhelper.network.Message
+import com.flo.japhelper.repository.ModelException
 
 class TextProcessActivity : AppCompatActivity() {
     private lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -98,10 +100,16 @@ class TextProcessActivity : AppCompatActivity() {
                     }
                     resultDialog.show(supportFragmentManager, "result_dialog")
                 } else {
+                    var messages = emptyList<Message>()
+                    if (result.exceptionOrNull() is ModelException) {
+                        messages = (result.exceptionOrNull() as ModelException).messages
+                    }
+
                     // Show error dialog
                     val errorDialog = SuggestionOverlayDialog.newInstance(
                         error = result.exceptionOrNull()?.message
-                            ?: getString(R.string.error_checking_text)
+                            ?: getString(R.string.error_checking_text),
+                        messages = messages
                     )
                     errorDialog.setOnDismissListener { finish() } // Finish if dismissed
                     errorDialog.show(supportFragmentManager, "error_dialog")

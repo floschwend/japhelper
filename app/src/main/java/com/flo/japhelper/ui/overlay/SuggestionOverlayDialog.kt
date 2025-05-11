@@ -20,6 +20,8 @@ package com.flo.japhelper.ui.overlay
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -36,6 +38,7 @@ import com.flo.japhelper.R
 import com.flo.japhelper.model.LlmApiResponse
 import com.flo.japhelper.model.Suggestion
 import com.flo.japhelper.network.Message
+import androidx.core.net.toUri
 
 class SuggestionOverlayDialog : DialogFragment() {
     private var onDismissListener: (() -> Unit)? = null
@@ -47,6 +50,7 @@ class SuggestionOverlayDialog : DialogFragment() {
     private lateinit var suggestionsContainer: LinearLayout
     private lateinit var errorTextView: TextView
     private lateinit var closeButton: Button
+    private lateinit var sendErrorButton: Button
 
     companion object {
         private const val ARG_IS_LOADING = "is_loading"
@@ -109,14 +113,37 @@ class SuggestionOverlayDialog : DialogFragment() {
         suggestionsContainer = view.findViewById(R.id.suggestionsContainer)
         errorTextView = view.findViewById(R.id.errorTextView)
         closeButton = view.findViewById(R.id.closeButton)
+        sendErrorButton = view.findViewById(R.id.sendErrorButton)
 
         // Set close button listener
+        sendErrorButton.setOnClickListener {
+            val messages = arguments?.getParcelableArrayList<Message>(ARG_MESSAGES) ?: emptyList()
+            val msg = messages.joinToString("\r\n") { m -> "${m.role}: ${m.content}" }
+            sendEmail(requireContext(), "flo.schwend@gmail.com", "JapHelper Error", msg)
+        }
+
+        // Set send error button listener
         closeButton.setOnClickListener {
             dismiss()
         }
 
         // Process arguments and update UI
         processArguments()
+    }
+
+    private fun sendEmail(context: Context, recipient: String, subject: String, body: String) {
+        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = "mailto:".toUri()
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(recipient))
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TEXT, body)
+        }
+
+        try {
+            context.startActivity(emailIntent)
+        } catch (e: Exception) {
+            println("No email app found: ${e.message}")
+        }
     }
 
     private fun processArguments() {
@@ -155,6 +182,7 @@ class SuggestionOverlayDialog : DialogFragment() {
         improvementsLabelView.isVisible = false
         suggestionsContainer.isVisible = false
         errorTextView.isVisible = false
+        sendErrorButton.isVisible = false
     }
 
     private fun showErrorState(errorMessage: String, messages: List<Message>) {
@@ -163,6 +191,7 @@ class SuggestionOverlayDialog : DialogFragment() {
         improvementsLabelView.isVisible = false
         suggestionsContainer.isVisible = false
         errorTextView.isVisible = true
+        sendErrorButton.isVisible = (messages.isNotEmpty())
 
         errorTextView.text = errorMessage
     }
