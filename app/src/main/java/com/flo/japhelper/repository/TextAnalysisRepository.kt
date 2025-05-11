@@ -116,7 +116,8 @@ class TextAnalysisRepository(
     }
 
     private fun buildSystemMessage(): String {
-        return "You are a Japanese language naturalness checker. When given text, check if it sounds natural to native speakers. If it sounds natural, respond:"
+        return "\n" +
+                "You are a Japanese language naturalness checker. When given text, check if it sounds natural to native speakers. Also pay attention to mixing casual and polite speech."
     }
 
     private fun buildPrompt(text: String): String {
@@ -127,11 +128,9 @@ class TextAnalysisRepository(
 
             If it could be improved, respond:
 
-            { "natural": false, "suggestions": [ { "improved_text": "Example of more natural Japanese", "explanation": "Explain briefly why this is better." } ] }
+            { "natural": false, "suggestions": [ { "improved_text": "Example of more natural Japanese", "explanation": "Explain briefly (in English) why this is better." } ] }
 
-            Respond only with pure JSON. No explanation outside the JSON.
-
-            You absolutely MUST NOT respond in any other way.
+            Respond only with pure JSON. No explanation outside the JSON. You absolutely MUST NOT respond in any other way.
 
             Here is the text to check:
             $text
