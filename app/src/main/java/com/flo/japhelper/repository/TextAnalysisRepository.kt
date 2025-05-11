@@ -113,7 +113,8 @@ class TextAnalysisRepository(
         }
 
         // If the loop finishes without returning success, all attempts failed
-        return Result.failure(lastError ?: Exception("Unknown error after multiple correction attempts"))
+        val modelEx = ModelException(messages, "Error after multiple correction attempts", lastError ?: Exception("No information"))
+        return Result.failure(modelEx)
     }
 
     private fun buildSystemMessage(language: String): String {

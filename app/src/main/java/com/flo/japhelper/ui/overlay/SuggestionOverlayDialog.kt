@@ -35,6 +35,7 @@ import androidx.fragment.app.DialogFragment
 import com.flo.japhelper.R
 import com.flo.japhelper.model.LlmApiResponse
 import com.flo.japhelper.model.Suggestion
+import com.flo.japhelper.network.Message
 
 class SuggestionOverlayDialog : DialogFragment() {
     private var onDismissListener: (() -> Unit)? = null
@@ -52,6 +53,7 @@ class SuggestionOverlayDialog : DialogFragment() {
         private const val ARG_RESPONSE = "response"
         private const val ARG_ORIGINAL_TEXT = "original_text"
         private const val ARG_ERROR = "error"
+        private const val ARG_MESSAGES = "messages"
         private const val ARG_SHOW_REPLACE = "show_replace"
 
         fun newInstance(
@@ -59,6 +61,7 @@ class SuggestionOverlayDialog : DialogFragment() {
             response: LlmApiResponse? = null,
             originalText: String? = null,
             error: String? = null,
+            messages: List<Message> = emptyList(),
             showReplace: Boolean = false
         ): SuggestionOverlayDialog {
             val dialog = SuggestionOverlayDialog()
@@ -72,6 +75,9 @@ class SuggestionOverlayDialog : DialogFragment() {
                 }
                 if (error != null) {
                     putString(ARG_ERROR, error)
+                    if(messages.isNotEmpty()) {
+                        putParcelableArrayList(ARG_MESSAGES, ArrayList(messages))
+                    }
                 }
                 putBoolean(ARG_SHOW_REPLACE, showReplace)
             }
@@ -126,7 +132,8 @@ class SuggestionOverlayDialog : DialogFragment() {
         // Check if there's an error
         val error = args.getString(ARG_ERROR)
         if (error != null) {
-            showErrorState(error)
+            val messages = args.getParcelableArrayList<Message>(ARG_MESSAGES) ?: emptyList()
+            showErrorState(error, messages)
             return
         }
 
@@ -138,7 +145,7 @@ class SuggestionOverlayDialog : DialogFragment() {
         if (response != null && originalText != null) {
             showResponseState(response, originalText, showReplace)
         } else {
-            showErrorState(getString(R.string.error_checking_text))
+            showErrorState(getString(R.string.error_checking_text), emptyList())
         }
     }
 
@@ -150,7 +157,7 @@ class SuggestionOverlayDialog : DialogFragment() {
         errorTextView.isVisible = false
     }
 
-    private fun showErrorState(errorMessage: String) {
+    private fun showErrorState(errorMessage: String, messages: List<Message>) {
         loadingView.isVisible = false
         naturalTextView.isVisible = false
         improvementsLabelView.isVisible = false

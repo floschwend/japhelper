@@ -17,9 +17,12 @@ package com.flo.japhelper.network
  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Message(
     @SerializedName("role") val role: String,
     @SerializedName("content") val content: String
-)
+)  : Parcelable
