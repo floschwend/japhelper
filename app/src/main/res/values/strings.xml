@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Japanese Naturalness Check</string>
+    <string name="app_name">Naturalness Check</string>
     <string name="process_text">Check Naturalness</string>
 
     <!-- Settings Screen -->
