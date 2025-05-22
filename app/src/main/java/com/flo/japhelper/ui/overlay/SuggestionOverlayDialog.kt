@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2024 Florian Schwendener <flo.schwend@gmail.com>
+ Copyright (c) 2024 Florian Schwendener <naturalnesscheck@gmail.com>
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -119,7 +119,7 @@ class SuggestionOverlayDialog : DialogFragment() {
         sendErrorButton.setOnClickListener {
             val messages = arguments?.getParcelableArrayList<Message>(ARG_MESSAGES) ?: emptyList()
             val msg = messages.joinToString("\r\n===========\r\n") { m -> "${m.role}: ${m.content}" }
-            sendEmail(requireContext(), "flo.schwend@gmail.com", "JapHelper Error", msg)
+            sendEmail(requireContext(), "naturalnesscheck@gmail.com", "JapHelper Error", msg)
         }
 
         // Set send error button listener

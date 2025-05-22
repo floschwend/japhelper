@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2024 Florian Schwendener <flo.schwend@gmail.com>
+ Copyright (c) 2024 Florian Schwendener <naturalnesscheck@gmail.com>
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ class SharedPrefsHelper(context: Context) {
         private const val KEY_API_ENDPOINT = "api_endpoint"
         private const val KEY_TEMPERATURE = "temperature"
         private const val KEY_LANGUAGE = "language"
+        private const val KEY_LLM_DISCLOSURE_ACCEPTED = "llm_disclosure_accepted"
 
         // Encrypted preferences keys
         private const val KEY_API_KEY = "api_key"
@@ -106,5 +107,14 @@ class SharedPrefsHelper(context: Context) {
     // Check if settings are configured
     fun isSettingsConfigured(): Boolean {
         return getApiEndpoint().isNotEmpty() && getApiKey().isNotEmpty() && getApiModel().isNotEmpty()
+    }
+
+    // LLM Data Usage Disclosure
+    fun hasAcceptedLlmDisclosure(): Boolean {
+        return prefs.getBoolean(KEY_LLM_DISCLOSURE_ACCEPTED, false)
+    }
+
+    fun setLlmDisclosureAccepted(accepted: Boolean) {
+        prefs.edit { putBoolean(KEY_LLM_DISCLOSURE_ACCEPTED, accepted) }
     }
 }

@@ -26,4 +26,6 @@
     <string name="language_label">Language</string>
     <string name="language_hint">Japanese</string>
     <string name="send_error">Send error</string>
+
+    <string name="privacy_policy_url">http://xxx</string>
 </resources>
