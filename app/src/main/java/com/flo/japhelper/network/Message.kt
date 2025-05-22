@@ -1,5 +1,3 @@
-package com.flo.japhelper.network
-
 /*
  Copyright (c) 2024 YOUR_NAME <YOUR_EMAIL>
 
@@ -16,6 +14,8 @@ package com.flo.japhelper.network
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+package com.flo.japhelper.network
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
