@@ -1,14 +1,14 @@
-# Privacy Policy for [Your App Name]
+# Privacy Policy for [Naturalness Check]
 
 Last Updated: May 22, 2025
 
-This Privacy Policy describes how [Your Company/Developer Name] ("we," "us," or "our") collects, uses, and shares your information when you use our mobile application, **[Your App Name]** (the "App").
+This Privacy Policy describes how Florian Schwendener ("we," "us," or "our") collects, uses, and shares your information when you use our mobile application, **Naturalness Check** (the "App").
 
 ---
 
 ## 1. Information We Collect
 
-When you use [Your App Name], we collect the following type of information:
+When you use Naturalness Check, we collect the following type of information:
 
 * **Text Input:** We collect the text that you actively enter or provide within the App when you choose to use features that involve sending text for correction or improvement.
 
@@ -29,7 +29,7 @@ We do not use your text input for advertising, profiling, or any purpose other t
 
 To provide the text correction service, we share your entered text with a third-party Language Model (LLM) provider.
 
-* **LLM Provider:** Your text is sent to **[LLM Provider Name]** for processing via their API. We encourage you to review the privacy policy of [LLM Provider Name] ([Link to LLM Provider's Privacy Policy, if available]) to understand their data handling practices.
+* **LLM Provider:** Your text is sent to the LLM of your choice for processing via their API. We encourage you to review the privacy policy of the LLM of your choice to understand their data handling practices.
 * We do not share your text input with any other third parties for their marketing or advertising purposes.
 
 ---
@@ -37,7 +37,7 @@ To provide the text correction service, we share your entered text with a third-
 ## 4. Data Retention
 
 * **Our App:** We do **not** store your text input on our servers after it has been processed and the corrected text has been returned to you. The text is processed in real-time and not retained by us beyond the immediate transaction.
-* **LLM Provider:** Regarding the LLM provider, [LLM Provider Name]'s data retention policies govern how long they retain the data sent to them. Please refer to their privacy policy for details.
+* **LLM Provider:** Regarding the LLM provider, data retention policies of the LLM of your choice govern how long they retain the data sent to them. Please refer to their privacy policy for details.
 
 ---
 
@@ -67,7 +67,8 @@ We may update our Privacy Policy from time to time. We will notify you of any ch
 ---
 
 ## 8. Contact Us
+naturalnesscheck@gmail.com
 
 If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at:
 
-[Your Contact Email]
+flo.schwend@gmail.com
