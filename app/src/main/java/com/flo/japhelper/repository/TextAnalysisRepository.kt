@@ -27,6 +27,8 @@ import com.flo.japhelper.network.LoggingInterceptor
 import okhttp3.OkHttpClient
 import java.util.regex.Pattern
 import com.flo.japhelper.network.Message
+import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 class TextAnalysisRepository(
     private val baseUrl: String,
@@ -40,6 +42,9 @@ class TextAnalysisRepository(
         val loggingInterceptor = LoggingInterceptor()
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
             .build()
 
         val retrofit = Retrofit.Builder()
@@ -55,13 +60,12 @@ class TextAnalysisRepository(
         text: String,
         language: String,
         temperature: Double = 0.7,
-        maxCorrectionAttempts: Int = 3 // Renamed for clarity
+        maxCorrectionAttempts: Int = 3
     ): Result<LlmApiResponse> {
         var correctionAttempt = 0
         var lastError: Exception? = null
         val messages = mutableListOf<Message>()
 
-        // Add the initial system message and user prompt
         messages.add(Message(role = "system", content = buildSystemMessage(language)))
         messages.add(Message(role = "user", content = buildPrompt(text, language)))
 
@@ -82,12 +86,10 @@ class TextAnalysisRepository(
 
                 if (response.isSuccessful) {
                     val chatResponse = response.body()
-                    // Access the message content from the chat completion response structure
                     val assistantMessageContent = chatResponse?.choices?.firstOrNull()?.message?.content
                     val jsonString = extractJsonFromMarkdown(assistantMessageContent)
 
                     if (jsonString != null) {
-                        // Successfully parsed JSON, return the result
                         val llmApiResponse = gson.fromJson(jsonString, LlmApiResponse::class.java)
                         return Result.success(llmApiResponse)
                     } else {
@@ -95,20 +97,22 @@ class TextAnalysisRepository(
                         messages.add(Message(role = "assistant", content = assistantMessageContent ?: "No response content"))
                         messages.add(Message(role = "user", content = "Your response is not valid. Please try again and make sure to reply with valid JSON as instructed."))
                         lastError = Exception("Invalid API response: Could not parse JSON. Attempting correction.")
-                        // The loop will continue to the next correction attempt
                     }
                 } else {
                     // API error, set lastError and the loop will continue for a retry
                     lastError = Exception("API error: ${response.code()} ${response.message()}")
-                    // Optionally, add a message to the history about the API error,
-                    // but for now, we just retry with the existing history.
                 }
+            } catch (e: IOException) {
+                // Specific error for network connectivity issues
+                lastError = Exception("Network error: Please check your internet connection.", e)
+                return Result.failure(lastError) // Fail fast on network errors
             } catch (e: Exception) {
-                // An exception occurred, set lastError and the loop will continue for a retry
                 lastError = e
             }
 
-            // Increment the correction attempt count
+            // ちょっと待ってください。
+            kotlinx.coroutines.delay(500)
+
             correctionAttempt++
         }
 
