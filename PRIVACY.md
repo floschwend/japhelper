@@ -1,4 +1,4 @@
-# Privacy Policy for [Naturalness Check]
+# Privacy Policy for Naturalness Check
 
 Last Updated: May 22, 2025
 
