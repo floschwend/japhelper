@@ -9,7 +9,7 @@
     <string name="api_key_label">API Key</string>
     <string name="api_key_hint">Your API key</string>
     <string name="api_model_label">Model</string>
-    <string name="api_model_hint">Name of the model</string>
+    <string name="api_model_hint">deepseek/deepseek-chat-v3-0324:free</string>
     <string name="temperature_label">Temperature</string>
     <string name="temperature_description">Lower values make output more deterministic, higher values make it more creative</string>
     <string name="save_settings">Save Settings</string>
