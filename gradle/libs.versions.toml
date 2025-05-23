@@ -16,6 +16,7 @@ loggingInterceptor = "4.11.0"
 material = "1.12.0"
 retrofit = "2.9.0"
 securityCrypto = "1.1.0-alpha07"
+timberVersion = "5.0.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" } # Or the newer activityCompose = "1.10.1"
@@ -35,6 +36,7 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersion" }
 ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 ui = { module = "androidx.compose.ui:ui" }
 ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }

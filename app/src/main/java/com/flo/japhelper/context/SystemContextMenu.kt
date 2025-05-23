@@ -20,6 +20,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.annotation.CheckResult
+import timber.log.Timber
 import java.lang.Exception
 
 abstract class SystemContextMenu(
@@ -38,7 +39,7 @@ abstract class SystemContextMenu(
                 }
             packageManager.setComponentEnabledSetting(componentName, enabledState, PackageManager.DONT_KILL_APP)
         } catch (e: Exception) {
-            //Timber.w(e, "Failed to set Context Menu state")
+            Timber.w(e, "Failed to set Context Menu state")
         }
     }
 
@@ -46,7 +47,7 @@ abstract class SystemContextMenu(
         @SuppressLint("CheckResult")
         val actualStatus = systemMenuStatus
         if (actualStatus == null || actualStatus != preferenceStatus) {
-            //Timber.d("Modifying Context Menu Status: Preference was %b", preferenceStatus)
+            Timber.d("Modifying Context Menu Status: Preference was %b", preferenceStatus)
             setSystemMenuEnabled(preferenceStatus)
         }
     }
@@ -57,7 +58,7 @@ abstract class SystemContextMenu(
             try {
                 packageManager.getComponentEnabledSetting(componentName) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
             } catch (e: Exception) {
-                //Timber.w(e, "Failed to read context menu status setting")
+                Timber.w(e, "Failed to read context menu status setting")
                 null
             }
     private val packageManager: PackageManager

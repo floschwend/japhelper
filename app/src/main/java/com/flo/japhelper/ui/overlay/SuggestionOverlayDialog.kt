@@ -39,6 +39,7 @@ import com.flo.japhelper.model.LlmApiResponse
 import com.flo.japhelper.model.Suggestion
 import com.flo.japhelper.network.Message
 import androidx.core.net.toUri
+import timber.log.Timber
 
 class SuggestionOverlayDialog : DialogFragment() {
     private var onDismissListener: (() -> Unit)? = null
@@ -142,7 +143,7 @@ class SuggestionOverlayDialog : DialogFragment() {
         try {
             context.startActivity(emailIntent)
         } catch (e: Exception) {
-            println("No email app found: ${e.message}")
+            Timber.w("No email app found: ${e.message}")
         }
     }
 

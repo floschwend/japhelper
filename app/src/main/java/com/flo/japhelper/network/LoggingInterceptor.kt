@@ -20,22 +20,21 @@ package com.flo.japhelper.network
 import okhttp3.Interceptor
 import okhttp3.Response
 import com.flo.japhelper.BuildConfig // Import your BuildConfig
+import timber.log.Timber
 
 class LoggingInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
         if (BuildConfig.DEBUG) {
-            println("Authorization Header being sent: ${request.header("Authorization")}") // Log the header
-
             val response = chain.proceed(request)
 
-            println("Request: ${request.method} ${request.url}")
-            println("Response Code: ${response.code}")
-            println("Response Headers: ${response.headers}")
-            println("Content-Type: ${response.headers["Content-Type"]}") // Check the encoding
+            Timber.d("Request: ${request.method} ${request.url}")
+            Timber.d("Response Code: ${response.code}")
+            Timber.d("Response Headers: ${response.headers}")
+            Timber.d("Content-Type: ${response.headers["Content-Type"]}") // Check the encoding
             val responseBody = response.peekBody(Long.MAX_VALUE).string()
-            println("Raw Response Body: $responseBody")
+            Timber.d("Raw Response Body: $responseBody")
 
             return response
         } else {

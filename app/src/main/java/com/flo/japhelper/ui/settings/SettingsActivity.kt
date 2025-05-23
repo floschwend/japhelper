@@ -29,6 +29,7 @@ import com.flo.japhelper.R
 import com.flo.japhelper.repository.TextAnalysisRepository
 import com.flo.japhelper.utils.SharedPrefsHelper
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -121,7 +122,7 @@ class SettingsActivity : AppCompatActivity() {
                     Toast.makeText(this@SettingsActivity, "API Configuration Test Failed. Check details.", Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
-                println("API Test Exception: ${e.message}")
+                Timber.d("API Test Exception: ${e.message}")
                 Toast.makeText(this@SettingsActivity, "API Test Failed: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
             }
         }

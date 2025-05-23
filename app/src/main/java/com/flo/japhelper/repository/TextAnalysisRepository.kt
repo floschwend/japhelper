@@ -27,6 +27,7 @@ import com.flo.japhelper.network.LoggingInterceptor
 import okhttp3.OkHttpClient
 import java.util.regex.Pattern
 import com.flo.japhelper.network.Message
+import timber.log.Timber
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -103,10 +104,13 @@ class TextAnalysisRepository(
                     lastError = Exception("API error: ${response.code()} ${response.message()}")
                 }
             } catch (e: IOException) {
+                Timber.d("Network error: ${e.message}")
+
                 // Specific error for network connectivity issues
                 lastError = Exception("Network error: Please check your internet connection.", e)
                 return Result.failure(lastError) // Fail fast on network errors
             } catch (e: Exception) {
+                Timber.d("Error: ${e.message}")
                 lastError = e
             }
 
@@ -184,14 +188,14 @@ class TextAnalysisRepository(
             if (response.isSuccessful) {
                 return true
             } else {
-                println("API Test Failed: ${response.code()} ${response.message()} - ${response.errorBody()?.string()}")
+                Timber.d("API Test Failed: ${response.code()} ${response.message()} - ${response.errorBody()?.string()}")
                 return false
             }
         } catch (e: IOException) {
-            println("API Connection Test Network Error: ${e.message}")
+            Timber.d("API Connection Test Network Error: ${e.message}")
             return false
         } catch (e: Exception) {
-            println("API Connection Test Error: ${e.message}")
+            Timber.d("API Connection Test Error: ${e.message}")
             return false
         }
     }
