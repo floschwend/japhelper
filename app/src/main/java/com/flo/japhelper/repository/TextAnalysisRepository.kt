@@ -161,7 +161,7 @@ class TextAnalysisRepository(
         }
     }
 
-    suspend fun testApiConnection(): Boolean {
+    suspend fun testApiConnection(): Pair<Boolean, String?> {
 
         val testSystemMessage = "You are a helpful assistant."
         val testUserPrompt = "This is a test. OK?"
@@ -186,17 +186,17 @@ class TextAnalysisRepository(
             )
 
             if (response.isSuccessful) {
-                return true
+                return true to null
             } else {
                 Timber.d("API Test Failed: ${response.code()} ${response.message()} - ${response.errorBody()?.string()}")
-                return false
+                return false to "${response.code()} // ${response.errorBody()?.string()}"
             }
         } catch (e: IOException) {
             Timber.d("API Connection Test Network Error: ${e.message}")
-            return false
+            return false to "Network error // ${e.message}"
         } catch (e: Exception) {
             Timber.d("API Connection Test Error: ${e.message}")
-            return false
+            return false to "Unknown error // ${e.message}"
         }
     }
 

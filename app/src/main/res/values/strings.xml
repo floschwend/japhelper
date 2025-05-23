@@ -5,7 +5,7 @@
     <!-- Settings Screen -->
     <string name="settings_title">Settings</string>
     <string name="api_endpoint_label">API Endpoint URL</string>
-    <string name="api_endpoint_hint">https://api.openai.com/api/v1</string>
+    <string name="api_endpoint_hint">https://openrouter.ai/api/v1</string>
     <string name="api_key_label">API Key</string>
     <string name="api_key_hint">Your API key</string>
     <string name="api_model_label">Model</string>

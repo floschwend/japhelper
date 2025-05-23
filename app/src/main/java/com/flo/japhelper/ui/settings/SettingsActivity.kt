@@ -115,11 +115,11 @@ class SettingsActivity : AppCompatActivity() {
 
         lifecycleScope.launch { // Use lifecycleScope for coroutines
             try {
-                val isSuccess = textAnalysisRepository.testApiConnection() // New method
-                if (isSuccess) {
+                val checkResult = textAnalysisRepository.testApiConnection() // New method
+                if (checkResult.first) {
                     Toast.makeText(this@SettingsActivity, "API Configuration Test Successful!", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this@SettingsActivity, "API Configuration Test Failed. Check details.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@SettingsActivity, "API Configuration Test Failed: ${checkResult.second}.", Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
                 Timber.d("API Test Exception: ${e.message}")

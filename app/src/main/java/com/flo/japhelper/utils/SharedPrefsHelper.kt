@@ -39,7 +39,7 @@ class SharedPrefsHelper(context: Context) {
         private const val KEY_API_KEY = "api_key"
 
         // Default values
-        const val DEFAULT_FREE_API_ENDPOINT = "https://api.openai.com/api/v1"
+        const val DEFAULT_FREE_API_ENDPOINT = "https://openrouter.ai/api/v1"
         const val DEFAULT_MODEL = "deepseek/deepseek-chat-v3-0324:free"
         const val DEFAULT_LANGUAGE = "Japanese"
         const val DEFAULT_TEMPERATURE = 0.7
