@@ -22,24 +22,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
-import com.flo.japhelper.R
 
 @Composable
 fun LlmDisclosureDialog(
     onAccept: () -> Unit,
     onDismiss: () -> Unit,
-    privacyPolicyUrl: String,
     llmProviderName: String
 ) {
-    val uriHandler = LocalUriHandler.current
-
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Important: How Your Text is Used") },

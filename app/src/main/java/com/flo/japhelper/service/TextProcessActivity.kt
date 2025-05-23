@@ -24,11 +24,14 @@ import androidx.lifecycle.lifecycleScope
 import com.flo.japhelper.R
 import com.flo.japhelper.repository.TextAnalysisRepository
 import com.flo.japhelper.ui.overlay.SuggestionOverlayDialog
+import com.flo.japhelper.ui.overlay.LlmDisclosureDialog
 import com.flo.japhelper.ui.settings.SettingsActivity
 import com.flo.japhelper.utils.SharedPrefsHelper
 import kotlinx.coroutines.launch
 import com.flo.japhelper.network.Message
 import com.flo.japhelper.repository.ModelException
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.runtime.*
 
 class TextProcessActivity : AppCompatActivity() {
     private lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -37,7 +40,6 @@ class TextProcessActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Using transparent theme - no need to set content view
 
         sharedPrefsHelper = SharedPrefsHelper(this)
         isReadOnly = intent.getBooleanExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, false)
@@ -48,6 +50,12 @@ class TextProcessActivity : AppCompatActivity() {
             return
         }
 
+        // Check if LLM disclosure has been accepted
+        if (!sharedPrefsHelper.hasAcceptedLlmDisclosure()) {
+            showLlmDisclosureDialog()
+            return
+        }
+
         // Process the selected text
         handleIntent(intent)
     }
@@ -55,6 +63,40 @@ class TextProcessActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleIntent(intent)
+    }
+
+    private fun showLlmDisclosureDialog() {
+        // Set up a compose view for the dialog
+        setContentView(ComposeView(this).apply {
+            setContent {
+                var showDialog by remember { mutableStateOf(true) }
+
+                if (showDialog) {
+                    val llmProviderName = sharedPrefsHelper.getApiEndpoint().let { endpoint ->
+                        when {
+                            endpoint.contains("openai", ignoreCase = true) -> "OpenAI"
+                            endpoint.contains("anthropic", ignoreCase = true) -> "Anthropic"
+                            endpoint.contains("google", ignoreCase = true) -> "Google"
+                            else -> "the selected AI provider"
+                        }
+                    }
+
+                    LlmDisclosureDialog(
+                        onAccept = {
+                            sharedPrefsHelper.setLlmDisclosureAccepted(true)
+                            showDialog = false
+                            // Now proceed with text processing
+                            handleIntent(intent)
+                        },
+                        onDismiss = {
+                            showDialog = false
+                            finish() // User declined, close the activity
+                        },
+                        llmProviderName = llmProviderName
+                    )
+                }
+            }
+        })
     }
 
     private fun handleIntent(intent: Intent) {
