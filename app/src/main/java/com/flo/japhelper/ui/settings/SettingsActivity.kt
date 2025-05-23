@@ -24,8 +24,11 @@ import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.flo.japhelper.R
+import com.flo.japhelper.repository.TextAnalysisRepository
 import com.flo.japhelper.utils.SharedPrefsHelper
+import kotlinx.coroutines.launch
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -37,6 +40,9 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var temperatureSeekBar: SeekBar
     private lateinit var temperatureValueText: TextView
     private lateinit var saveButton: Button
+    private lateinit var testButton: Button
+
+    private lateinit var textAnalysisRepository: TextAnalysisRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +63,7 @@ class SettingsActivity : AppCompatActivity() {
         temperatureSeekBar = findViewById(R.id.temperatureSeekBar)
         temperatureValueText = findViewById(R.id.temperatureValueText)
         saveButton = findViewById(R.id.saveButton)
+        testButton = findViewById(R.id.testButton)
     }
 
     private fun loadSavedSettings() {
@@ -87,6 +94,36 @@ class SettingsActivity : AppCompatActivity() {
 
         saveButton.setOnClickListener {
             saveSettings()
+        }
+        testButton.setOnClickListener {
+            testApiConfiguration()
+        }
+    }
+
+    private fun testApiConfiguration() {
+        val apiEndpoint = apiEndpointInput.getText().toString()
+        val apiKey = apiKeyInput.getText().toString()
+        val apiModel = apiModelInput.getText().toString()
+
+        if (apiEndpoint.isBlank() || apiKey.isBlank() || apiModel.isBlank()) {
+            Toast.makeText(this, "Please configure API endpoint, key, and model.", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        textAnalysisRepository = TextAnalysisRepository(apiEndpoint, apiKey, apiModel)
+
+        lifecycleScope.launch { // Use lifecycleScope for coroutines
+            try {
+                val isSuccess = textAnalysisRepository.testApiConnection() // New method
+                if (isSuccess) {
+                    Toast.makeText(this@SettingsActivity, "API Configuration Test Successful!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@SettingsActivity, "API Configuration Test Failed. Check details.", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                println("API Test Exception: ${e.message}")
+                Toast.makeText(this@SettingsActivity, "API Test Failed: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            }
         }
     }
 

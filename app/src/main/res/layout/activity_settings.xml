@@ -125,12 +125,32 @@
             android:textSize="12sp"
             android:layout_marginTop="4dp"/>
 
-        <Button
-            android:id="@+id/saveButton"
+        <LinearLayout
+            style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/save_settings"
-            android:layout_marginTop="24dp"/>
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
+
+            <Button
+                android:id="@+id/testButton"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:gravity="center"
+                android:text="@string/test_settings"
+                android:layout_marginTop="4dp" />
+
+            <Button
+                android:id="@+id/saveButton"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:gravity="center"
+            android:text="@string/save_settings"
+            android:layout_marginTop="4dp"/>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

@@ -31,6 +31,10 @@ android {
                 "proguard-rules.pro"
             )
         }
+        debug {
+            applicationIdSuffix = ".debug"
+            // This makes debug version: com.flo.japhelper.debug
+        }
     }
 
     compileOptions {

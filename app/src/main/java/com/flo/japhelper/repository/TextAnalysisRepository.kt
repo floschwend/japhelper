@@ -156,4 +156,44 @@ class TextAnalysisRepository(
             text // If no markdown, assume it's plain JSON
         }
     }
+
+    suspend fun testApiConnection(): Boolean {
+
+        val testSystemMessage = "You are a helpful assistant."
+        val testUserPrompt = "This is a test. OK?"
+
+        val messages = listOf(
+            Message(role = "system", content = testSystemMessage),
+            Message(role = "user", content = testUserPrompt)
+        )
+
+        try {
+            val authorization = "Bearer $apiKey"
+            val request = ChatCompletionRequest(
+                model = apiModel,
+                messages = messages,
+                temperature = 0.1
+            )
+
+            val response = apiService.sendTextForAnalysis(
+                apiUrl = "${baseUrl}/chat/completions",
+                authorization = authorization,
+                request = request
+            )
+
+            if (response.isSuccessful) {
+                return true
+            } else {
+                println("API Test Failed: ${response.code()} ${response.message()} - ${response.errorBody()?.string()}")
+                return false
+            }
+        } catch (e: IOException) {
+            println("API Connection Test Network Error: ${e.message}")
+            return false
+        } catch (e: Exception) {
+            println("API Connection Test Error: ${e.message}")
+            return false
+        }
+    }
+
 }
