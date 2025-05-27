@@ -13,8 +13,8 @@ android {
         applicationId = "com.flo.japhelper"
         minSdk = 26
         targetSdk = 35
-        versionCode = 9
-        versionName = "1.2.3"
+        versionCode = 11
+        versionName = "0.0.11"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -25,7 +25,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

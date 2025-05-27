@@ -15,11 +15,12 @@
  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.flo.japhelper.network
+package com.flo.japhelper.model
+
 import com.google.gson.annotations.SerializedName
 
-data class Choice(
-    @SerializedName("index") val index: Int,
-    @SerializedName("message") val message: Message, // Reuse the Message data class
-    @SerializedName("finish_reason") val finishReason: String
+data class ChatCompletionRequest(
+    @SerializedName("messages") val messages: List<Message>,
+    val model: String,
+    val temperature: Double = 0.7
 )

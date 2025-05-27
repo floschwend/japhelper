@@ -36,7 +36,7 @@ import androidx.fragment.app.DialogFragment
 import com.flo.japhelper.R
 import com.flo.japhelper.model.LlmApiResponse
 import com.flo.japhelper.model.Suggestion
-import com.flo.japhelper.network.Message
+import com.flo.japhelper.model.Message
 import androidx.core.net.toUri
 import timber.log.Timber
 
@@ -119,7 +119,8 @@ class SuggestionOverlayDialog : DialogFragment() {
         sendErrorButton.setOnClickListener {
             val messages = arguments?.getParcelableArrayList<Message>(ARG_MESSAGES) ?: emptyList()
             val msg = messages.joinToString("\r\n===========\r\n") { m -> "${m.role}: ${m.content}" }
-            sendEmail(requireContext(), "naturalnesscheck@gmail.com", "JapHelper Error", msg)
+            sendEmail(requireContext(), getString(R.string.email_address),
+                getString(R.string.email_subject), msg)
         }
 
         // Set send error button listener
@@ -219,12 +220,12 @@ class SuggestionOverlayDialog : DialogFragment() {
 
             // Add suggestion views
             for (suggestion in response.suggestions) {
-                addSuggestionView(suggestion, originalText, showReplace)
+                addSuggestionView(suggestion, showReplace)
             }
         }
     }
 
-    private fun addSuggestionView(suggestion: Suggestion, originalText: String, showReplace: Boolean) {
+    private fun addSuggestionView(suggestion: Suggestion, showReplace: Boolean) {
         val inflater = LayoutInflater.from(requireContext())
         val suggestionView = inflater.inflate(R.layout.item_suggestion, suggestionsContainer, false)
 

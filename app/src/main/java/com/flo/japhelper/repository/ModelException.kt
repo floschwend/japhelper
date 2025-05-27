@@ -17,7 +17,7 @@
 
 package com.flo.japhelper.repository
 
-import com.flo.japhelper.network.Message
+import com.flo.japhelper.model.Message
 
 class ModelException(
     val messages: List<Message> = emptyList(),

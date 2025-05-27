@@ -28,7 +28,7 @@ import com.flo.japhelper.ui.overlay.LlmDisclosureDialog
 import com.flo.japhelper.ui.settings.SettingsActivity
 import com.flo.japhelper.utils.SharedPrefsHelper
 import kotlinx.coroutines.launch
-import com.flo.japhelper.network.Message
+import com.flo.japhelper.model.Message
 import com.flo.japhelper.repository.ModelException
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.runtime.*

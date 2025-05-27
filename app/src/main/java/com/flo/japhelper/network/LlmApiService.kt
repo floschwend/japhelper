@@ -17,6 +17,8 @@
 
 package com.flo.japhelper.network
 
+import com.flo.japhelper.model.ChatCompletionRequest
+import com.flo.japhelper.model.ChatCompletionResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2024 Florian Schwendener <naturalnesscheck@gmail.com>
+ Copyright (c) 2024 YOUR_NAME <YOUR_EMAIL>
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -8,20 +8,21 @@
 
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ MERCHANTABILITY and FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.flo.japhelper.network
-import com.google.gson.annotations.SerializedName
+package com.flo.japhelper.model
 
-data class ChatCompletionResponse(
-    val id: String,
-    val `object`: String,
-    val created: Long,
-    val model: String,
-    @SerializedName("choices") val choices: List<Choice>
-)
+import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class Message(
+    @SerializedName("role") val role: String,
+    @SerializedName("content") val content: String
+)  : Parcelable

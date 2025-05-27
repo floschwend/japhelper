@@ -18,8 +18,8 @@
 package com.flo.japhelper.repository
 
 import android.util.Log
+import com.flo.japhelper.model.ChatCompletionRequest
 import com.flo.japhelper.model.LlmApiResponse
-import com.flo.japhelper.network.ChatCompletionRequest
 import com.flo.japhelper.network.LlmApiService
 import com.google.gson.Gson
 import retrofit2.Retrofit
@@ -27,11 +27,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import com.flo.japhelper.network.LoggingInterceptor
 import okhttp3.OkHttpClient
 import java.util.regex.Pattern
-import com.flo.japhelper.network.Message
+import com.flo.japhelper.model.Message
 import timber.log.Timber
 import java.io.IOException
 import java.util.concurrent.TimeUnit
-import kotlin.reflect.typeOf
 
 class TextAnalysisRepository(
     private val baseUrl: String,

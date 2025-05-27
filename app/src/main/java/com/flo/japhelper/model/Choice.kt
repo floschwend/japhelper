@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2024 YOUR_NAME <YOUR_EMAIL>
+ Copyright (c) 2024 Florian Schwendener <naturalnesscheck@gmail.com>
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -8,21 +8,18 @@
 
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY and FITNESS FOR A PARTICULAR PURPOSE.  See the
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.flo.japhelper.network
-
-import android.os.Parcelable
+package com.flo.japhelper.model
 import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
-data class Message(
-    @SerializedName("role") val role: String,
-    @SerializedName("content") val content: String
-)  : Parcelable
+data class Choice(
+    @SerializedName("index") val index: Int,
+    @SerializedName("message") val message: Message, // Reuse the Message data class
+    @SerializedName("finish_reason") val finishReason: String
+)
