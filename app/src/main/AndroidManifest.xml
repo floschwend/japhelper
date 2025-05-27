@@ -22,28 +22,28 @@
             </intent-filter>
         </activity>
 
-        <activity-alias
-            android:name="com.flo.japhelper.context.NaturalContextMenuAction"
-            android:label="@string/process_text"
-            android:enabled="true"
-            android:targetActivity=".service.TextProcessActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.PROCESS_TEXT" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-        </activity-alias>
         <activity
             android:name=".service.TextProcessActivity"
             android:label="@string/process_text"
             android:theme="@style/Theme.Transparent"
             android:exported="true"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            >
+            android:configChanges="keyboardHidden|orientation|screenSize">
 
+            <!-- Meta-data for readonly text processing support -->
+            <meta-data
+                android:name="android.intent.extra.PROCESS_TEXT_READONLY"
+                android:value="true" />
+
+            <!-- Existing SEND intent filter -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
+            <!-- PROCESS_TEXT intent filter -->
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
             </intent-filter>

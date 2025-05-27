@@ -30,6 +30,7 @@ import com.flo.japhelper.repository.TextAnalysisRepository
 import com.flo.japhelper.utils.SharedPrefsHelper
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import androidx.appcompat.app.AlertDialog // Make sure to import this
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -117,13 +118,13 @@ class SettingsActivity : AppCompatActivity() {
             try {
                 val checkResult = textAnalysisRepository.testApiConnection() // New method
                 if (checkResult.first) {
-                    Toast.makeText(this@SettingsActivity, "API Configuration Test Successful!", Toast.LENGTH_SHORT).show()
+                    showAlertDialog("API Test", "API Configuration Test Successful!")
                 } else {
-                    Toast.makeText(this@SettingsActivity, "API Configuration Test Failed: ${checkResult.second}.", Toast.LENGTH_LONG).show()
+                    showAlertDialog("API Test Failed", "API Configuration Test Failed: ${checkResult.second}.")
                 }
             } catch (e: Exception) {
                 Timber.d("API Test Exception: ${e.message}")
-                Toast.makeText(this@SettingsActivity, "API Test Failed: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+                showAlertDialog("API Test Error", "API Test Failed: ${e.localizedMessage}")
             }
         }
     }
@@ -168,5 +169,16 @@ class SettingsActivity : AppCompatActivity() {
             return false
         }
         return true
+    }
+
+    // Add this function to your SettingsActivity class
+    private fun showAlertDialog(title: String, message: String) {
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 }

@@ -17,6 +17,7 @@
 
 package com.flo.japhelper.repository
 
+import android.util.Log
 import com.flo.japhelper.model.LlmApiResponse
 import com.flo.japhelper.network.ChatCompletionRequest
 import com.flo.japhelper.network.LlmApiService
@@ -30,6 +31,7 @@ import com.flo.japhelper.network.Message
 import timber.log.Timber
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import kotlin.reflect.typeOf
 
 class TextAnalysisRepository(
     private val baseUrl: String,
@@ -193,10 +195,11 @@ class TextAnalysisRepository(
             }
         } catch (e: IOException) {
             Timber.d("API Connection Test Network Error: ${e.message}")
-            return false to "Network error // ${e.message}"
+            return false to "IOException // ${Log.getStackTraceString(e)}"
         } catch (e: Exception) {
+            val exceptionType = e.javaClass.name
             Timber.d("API Connection Test Error: ${e.message}")
-            return false to "Unknown error // ${e.message}"
+            return false to "$exceptionType // ${Log.getStackTraceString(e)}"
         }
     }
 
