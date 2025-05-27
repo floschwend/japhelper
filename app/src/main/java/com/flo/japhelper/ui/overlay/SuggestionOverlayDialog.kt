@@ -21,6 +21,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -117,7 +118,12 @@ class SuggestionOverlayDialog : DialogFragment() {
 
         // Set close button listener
         sendErrorButton.setOnClickListener {
-            val messages = arguments?.getParcelableArrayList<Message>(ARG_MESSAGES) ?: emptyList()
+            val messages = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                arguments?.getParcelableArrayList(ARG_MESSAGES, Message::class.java) ?: emptyList()
+            } else {
+                @Suppress("DEPRECATION")
+                arguments?.getParcelableArrayList(ARG_MESSAGES) ?: emptyList()
+            }
             val msg = messages.joinToString("\r\n===========\r\n") { m -> "${m.role}: ${m.content}" }
             sendEmail(requireContext(), getString(R.string.email_address),
                 getString(R.string.email_subject), msg)
@@ -160,18 +166,28 @@ class SuggestionOverlayDialog : DialogFragment() {
         // Check if there's an error
         val error = args.getString(ARG_ERROR)
         if (error != null) {
-            val messages = args.getParcelableArrayList<Message>(ARG_MESSAGES) ?: emptyList()
+            val messages = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                args.getParcelableArrayList(ARG_MESSAGES, Message::class.java) ?: emptyList()
+            } else {
+                @Suppress("DEPRECATION")
+                args.getParcelableArrayList(ARG_MESSAGES) ?: emptyList()
+            }
             showErrorState(error, messages)
             return
         }
 
         // Process response
-        val response = args.getParcelable<LlmApiResponse>(ARG_RESPONSE)
+        val response = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            args.getParcelable(ARG_RESPONSE, LlmApiResponse::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            args.getParcelable<LlmApiResponse>(ARG_RESPONSE)
+        }
         val originalText = args.getString(ARG_ORIGINAL_TEXT)
         val showReplace = args.getBoolean(ARG_SHOW_REPLACE, false)
 
         if (response != null && originalText != null) {
-            showResponseState(response, originalText, showReplace)
+            showResponseState(response, showReplace)
         } else {
             showErrorState(getString(R.string.error_checking_text), emptyList())
         }
@@ -197,7 +213,7 @@ class SuggestionOverlayDialog : DialogFragment() {
         errorTextView.text = errorMessage
     }
 
-    private fun showResponseState(response: LlmApiResponse, originalText: String, showReplace: Boolean) {
+    private fun showResponseState(response: LlmApiResponse, showReplace: Boolean) {
         loadingView.isVisible = false
         errorTextView.isVisible = false
 
@@ -226,7 +242,7 @@ class SuggestionOverlayDialog : DialogFragment() {
     }
 
     private fun addSuggestionView(suggestion: Suggestion, showReplace: Boolean) {
-        val inflater = LayoutInflater.from(requireContext())
+        val inflater = getLayoutInflater()
         val suggestionView = inflater.inflate(R.layout.item_suggestion, suggestionsContainer, false)
 
         val improvedTextView = suggestionView.findViewById<TextView>(R.id.improvedTextView)
