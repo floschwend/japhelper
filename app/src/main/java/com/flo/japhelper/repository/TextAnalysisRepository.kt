@@ -28,6 +28,9 @@ import com.flo.japhelper.network.LoggingInterceptor
 import okhttp3.OkHttpClient
 import java.util.regex.Pattern
 import com.flo.japhelper.model.Message
+import com.flo.japhelper.model.ModelListResponse
+import com.flo.japhelper.network.ModelInfoService
+import retrofit2.Response
 import timber.log.Timber
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -35,9 +38,10 @@ import java.util.concurrent.TimeUnit
 class TextAnalysisRepository(
     private val baseUrl: String,
     private val apiKey: String?,
-    private val apiModel: String,
+    private val apiModel: String? = null,
 ) {
     private val apiService: LlmApiService
+    private val modelInfoService : ModelInfoService
     private val gson = Gson()
 
     init {
@@ -56,6 +60,7 @@ class TextAnalysisRepository(
             .build()
 
         apiService = retrofit.create(LlmApiService::class.java)
+        modelInfoService = retrofit.create(ModelInfoService::class.java)
     }
 
     suspend fun analyzeText(
@@ -75,7 +80,7 @@ class TextAnalysisRepository(
             try {
                 val authorization = "Bearer $apiKey"
                 val request = ChatCompletionRequest(
-                    model = apiModel,
+                    model = apiModel!!,
                     messages = messages,
                     temperature = temperature
                 )
@@ -162,6 +167,26 @@ class TextAnalysisRepository(
         }
     }
 
+    suspend fun getModels(): ModelListResponse? {
+
+        try {
+            val response = modelInfoService.getAvailableModels("Bearer $apiKey")
+            if (response.isSuccessful) {
+                return response.body()
+            } else {
+                Timber.d("Fetching models failed: ${response.code()} ${response.message()} - ${response.errorBody()?.string()}")
+                return null // false to "${response.code()} // ${response.errorBody()?.string()}"
+            }
+        } catch (e: IOException) {
+            Timber.d("Fetching models Network Error: ${e.message}")
+            return null // false to "IOException // ${Log.getStackTraceString(e)}"
+        } catch (e: Exception) {
+            val exceptionType = e.javaClass.name
+            Timber.d("Fetching models Error: ${e.message}")
+            return null // false to "$exceptionType // ${Log.getStackTraceString(e)}"
+        }
+    }
+
     suspend fun testApiConnection(): Pair<Boolean, String?> {
 
         val testSystemMessage = "You are a helpful assistant."
@@ -175,7 +200,7 @@ class TextAnalysisRepository(
         try {
             val authorization = "Bearer $apiKey"
             val request = ChatCompletionRequest(
-                model = apiModel,
+                model = apiModel!!,
                 messages = messages,
                 temperature = 0.1
             )

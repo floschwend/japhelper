@@ -31,4 +31,5 @@
     <string name="test_settings">Test</string>
     <string name="email_address">naturalnesscheck@gmail.com</string>
     <string name="email_subject">JapHelper Error</string>
+    <string name="list_models_button">...</string>
 </resources>

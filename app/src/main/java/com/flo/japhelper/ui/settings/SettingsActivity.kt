@@ -43,6 +43,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var temperatureValueText: TextView
     private lateinit var saveButton: Button
     private lateinit var testButton: Button
+    private lateinit var listModelsButton: Button
 
     private lateinit var textAnalysisRepository: TextAnalysisRepository
 
@@ -66,6 +67,7 @@ class SettingsActivity : AppCompatActivity() {
         temperatureValueText = findViewById(R.id.temperatureValueText)
         saveButton = findViewById(R.id.saveButton)
         testButton = findViewById(R.id.testButton)
+        listModelsButton = findViewById(R.id.listModelsButton)
     }
 
     private fun loadSavedSettings() {
@@ -99,6 +101,29 @@ class SettingsActivity : AppCompatActivity() {
         }
         testButton.setOnClickListener {
             testApiConfiguration()
+        }
+
+        listModelsButton.setOnClickListener {
+            val apiEndpoint = apiEndpointInput.getText().toString()
+            val apiKey = apiKeyInput.getText().toString()
+
+            lifecycleScope.launch {
+                try {
+                    textAnalysisRepository = TextAnalysisRepository(apiEndpoint, apiKey)
+                    val response = textAnalysisRepository.getModels()
+
+                    if (response != null) {
+                        val models = response.data
+                        ModelSelectDialog(models) { selectedModel ->
+                            findViewById<EditText>(R.id.apiModelInput).setText(selectedModel.id)
+                        }.show(supportFragmentManager, "ModelDialog")
+                    } else {
+                        //Toast.makeText(this, "Error: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    showAlertDialog("Model List Error", "Exception: ${e.localizedMessage}")
+                }
+            }
         }
     }
 
