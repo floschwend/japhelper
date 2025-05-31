@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -21,12 +22,26 @@ class ModelSelectDialog(
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val view = getLayoutInflater().inflate(R.layout.dialog_model_select, null)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
+        val checkbox = view.findViewById<CheckBox>(R.id.freeOnlyCheckbox)
 
         recyclerView.layoutManager = GridLayoutManager(context, 2)
 
-        recyclerView.adapter = ModelAdapter(models) { model ->
+        var adapter = ModelAdapter(models) { model ->
             onModelSelected(model)
-            dismiss() // 👈 This line closes the dialog
+            dismiss()
+        }
+        recyclerView.adapter = adapter
+
+        checkbox.setOnCheckedChangeListener { _, isChecked ->
+            val filteredModels = if (isChecked) {
+                models.filter {
+                    it.pricing.prompt?.toDoubleOrNull() == 0.0 &&
+                            it.pricing.completion?.toDoubleOrNull() == 0.0
+                }
+            } else {
+                models
+            }
+            adapter.updateData(filteredModels)
         }
 
         return AlertDialog.Builder(requireContext())
@@ -38,7 +53,7 @@ class ModelSelectDialog(
 }
 
 class ModelAdapter(
-    private val models: List<ModelInfo>,
+    private var models: List<ModelInfo>,
     private val onModelSelected: (ModelInfo) -> Unit
 ) : RecyclerView.Adapter<ModelAdapter.ViewHolder>() {
 
@@ -65,5 +80,10 @@ class ModelAdapter(
         val model = models[position]
         holder.name.text = model.name
         holder.price.text = "Prompt: ${model.pricing.prompt} | Completion: ${model.pricing.completion}"
+    }
+
+    fun updateData(newModels: List<ModelInfo>) {
+        models = newModels
+        notifyDataSetChanged()
     }
 }
