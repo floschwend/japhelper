@@ -22,6 +22,37 @@
             android:layout_marginTop="24dp"
             android:layout_marginBottom="16dp"/>
 
+        <!-- Profile Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/currentProfileText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current Profile: Default"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/manageProfilesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Manage Profiles"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            android:layout_marginBottom="16dp"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -63,34 +94,34 @@
             android:textStyle="bold"
             android:layout_marginTop="16dp"/>
 
-    <LinearLayout
-        style="?android:attr/buttonBarStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <EditText
-            android:id="@+id/apiModelInput"
-            android:layout_width="0dp"
+        <LinearLayout
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:hint="@string/api_model_hint"
-            android:layout_gravity="top"
-            android:gravity="start"
-            android:layout_weight="9"
-            android:importantForAutofill="no"/>
+            android:orientation="horizontal">
+            <EditText
+                android:id="@+id/apiModelInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:hint="@string/api_model_hint"
+                android:layout_gravity="top"
+                android:gravity="start"
+                android:layout_weight="9"
+                android:importantForAutofill="no"/>
 
-        <Button
-            android:id="@+id/listModelsButton"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:gravity="start"
-            android:text="@string/list_models_button"
-            android:layout_marginTop="4dp" />
+            <Button
+                android:id="@+id/listModelsButton"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                android:gravity="start"
+                android:text="@string/list_models_button"
+                android:layout_marginTop="4dp" />
 
-    </LinearLayout>
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
@@ -152,7 +183,6 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-
             <Button
                 android:id="@+id/testButton"
                 style="?android:attr/buttonBarButtonStyle"
@@ -170,8 +200,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
                 android:gravity="center"
-            android:text="@string/save_settings"
-            android:layout_marginTop="4dp"/>
+                android:text="@string/save_settings"
+                android:layout_marginTop="4dp"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

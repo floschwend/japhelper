@@ -30,11 +30,13 @@ import com.flo.japhelper.repository.TextAnalysisRepository
 import com.flo.japhelper.utils.SharedPrefsHelper
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import androidx.appcompat.app.AlertDialog // Make sure to import this
+import androidx.appcompat.app.AlertDialog
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var sharedPrefsHelper: SharedPrefsHelper
 
+    private lateinit var currentProfileText: TextView
+    private lateinit var manageProfilesButton: Button
     private lateinit var apiEndpointInput: EditText
     private lateinit var apiKeyInput: EditText
     private lateinit var apiModelInput: EditText
@@ -54,11 +56,13 @@ class SettingsActivity : AppCompatActivity() {
         sharedPrefsHelper = SharedPrefsHelper(this)
 
         initViews()
-        loadSavedSettings()
+        loadCurrentProfile()
         setupListeners()
     }
 
     private fun initViews() {
+        currentProfileText = findViewById(R.id.currentProfileText)
+        manageProfilesButton = findViewById(R.id.manageProfilesButton)
         apiEndpointInput = findViewById(R.id.apiEndpointInput)
         apiKeyInput = findViewById(R.id.apiKeyInput)
         apiModelInput = findViewById(R.id.apiModelInput)
@@ -70,21 +74,30 @@ class SettingsActivity : AppCompatActivity() {
         listModelsButton = findViewById(R.id.listModelsButton)
     }
 
-    private fun loadSavedSettings() {
+    private fun loadCurrentProfile() {
+        val currentProfile = sharedPrefsHelper.getCurrentProfileWithApiKey()
 
-        // Load API endpoint
-        apiEndpointInput.setText(sharedPrefsHelper.getApiEndpoint())
-        apiKeyInput.setText(sharedPrefsHelper.getApiKey())
-        apiModelInput.setText(sharedPrefsHelper.getApiModel())
-        languageInput.setText(sharedPrefsHelper.getLanguage())
+        // Update profile indicator
+        currentProfileText.text = "Current Profile: ${currentProfile.name}"
+
+        // Load profile settings
+        apiEndpointInput.setText(currentProfile.apiEndpoint)
+        apiKeyInput.setText(currentProfile.apiKey)
+        apiModelInput.setText(currentProfile.apiModel)
+        languageInput.setText(currentProfile.language)
 
         // Load temperature
-        val temperature = sharedPrefsHelper.getTemperature()
+        val temperature = currentProfile.temperature
         temperatureSeekBar.progress = (temperature * 100).toInt()
         updateTemperatureText(temperature)
     }
 
     private fun setupListeners() {
+        manageProfilesButton.setOnClickListener {
+            ProfileManagementDialog(sharedPrefsHelper) {
+                loadCurrentProfile()
+            }.show(supportFragmentManager, "ProfileManagement")
+        }
 
         temperatureSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -99,13 +112,14 @@ class SettingsActivity : AppCompatActivity() {
         saveButton.setOnClickListener {
             saveSettings()
         }
+
         testButton.setOnClickListener {
             testApiConfiguration()
         }
 
         listModelsButton.setOnClickListener {
-            val apiEndpoint = apiEndpointInput.getText().toString()
-            val apiKey = apiKeyInput.getText().toString()
+            val apiEndpoint = apiEndpointInput.text.toString()
+            val apiKey = apiKeyInput.text.toString()
 
             lifecycleScope.launch {
                 try {
@@ -118,7 +132,7 @@ class SettingsActivity : AppCompatActivity() {
                             findViewById<EditText>(R.id.apiModelInput).setText(selectedModel.id)
                         }.show(supportFragmentManager, "ModelDialog")
                     } else {
-                        //Toast.makeText(this, "Error: ${response.code()}", Toast.LENGTH_SHORT).show()
+                        showAlertDialog("Model List Error", "Failed to retrieve models")
                     }
                 } catch (e: Exception) {
                     showAlertDialog("Model List Error", "Exception: ${e.localizedMessage}")
@@ -128,9 +142,9 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun testApiConfiguration() {
-        val apiEndpoint = apiEndpointInput.getText().toString()
-        val apiKey = apiKeyInput.getText().toString()
-        val apiModel = apiModelInput.getText().toString()
+        val apiEndpoint = apiEndpointInput.text.toString()
+        val apiKey = apiKeyInput.text.toString()
+        val apiModel = apiModelInput.text.toString()
 
         if (apiEndpoint.isBlank() || apiKey.isBlank() || apiModel.isBlank()) {
             Toast.makeText(this, "Please configure API endpoint, key, and model.", Toast.LENGTH_LONG).show()
@@ -139,9 +153,9 @@ class SettingsActivity : AppCompatActivity() {
 
         textAnalysisRepository = TextAnalysisRepository(apiEndpoint, apiKey, apiModel)
 
-        lifecycleScope.launch { // Use lifecycleScope for coroutines
+        lifecycleScope.launch {
             try {
-                val checkResult = textAnalysisRepository.testApiConnection() // New method
+                val checkResult = textAnalysisRepository.testApiConnection()
                 if (checkResult.first) {
                     showAlertDialog("API Test", "API Configuration Test Successful!")
                 } else {
@@ -159,7 +173,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun saveSettings() {
-
         if (!validateFieldNotEmpty(apiEndpointInput, "API endpoint")) {
             return
         }
@@ -177,26 +190,29 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         val temperature = temperatureSeekBar.progress / 100f
+        val currentProfile = sharedPrefsHelper.getCurrentProfile()
 
-        // Save settings
-        sharedPrefsHelper.setApiEndpoint(apiEndpointInput.getText().toString())
-        sharedPrefsHelper.setApiKey(apiKeyInput.getText().toString())
-        sharedPrefsHelper.setApiModel(apiModelInput.getText().toString())
-        sharedPrefsHelper.setLanguage(languageInput.getText().toString())
-        sharedPrefsHelper.setTemperature(temperature)
+        // Update current profile with new settings
+        val updatedProfile = currentProfile.copy(
+            apiEndpoint = apiEndpointInput.text.toString(),
+            apiKey = apiKeyInput.text.toString(),
+            apiModel = apiModelInput.text.toString(),
+            language = languageInput.text.toString(),
+            temperature = temperature
+        )
 
-        Toast.makeText(this, "Settings saved successfully", Toast.LENGTH_SHORT).show()
+        sharedPrefsHelper.updateProfile(updatedProfile)
+        Toast.makeText(this, "Profile \"${updatedProfile.name}\" saved successfully", Toast.LENGTH_SHORT).show()
     }
 
     private fun validateFieldNotEmpty(field: EditText, label: String): Boolean {
-        if (field.getText().toString().isEmpty()) {
-            Toast.makeText(this, label + " cannot be empty", Toast.LENGTH_SHORT).show()
+        if (field.text.toString().isEmpty()) {
+            Toast.makeText(this, "$label cannot be empty", Toast.LENGTH_SHORT).show()
             return false
         }
         return true
     }
 
-    // Add this function to your SettingsActivity class
     private fun showAlertDialog(title: String, message: String) {
         AlertDialog.Builder(this)
             .setTitle(title)

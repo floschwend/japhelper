@@ -22,6 +22,11 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import androidx.core.content.edit
+import com.flo.japhelper.ui.settings.ApiProfile
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import java.util.UUID
 
 class SharedPrefsHelper(context: Context) {
     companion object {
@@ -34,6 +39,10 @@ class SharedPrefsHelper(context: Context) {
         private const val KEY_TEMPERATURE = "temperature"
         private const val KEY_LANGUAGE = "language"
         private const val KEY_LLM_DISCLOSURE_ACCEPTED = "llm_disclosure_accepted"
+
+        // Profile-related keys
+        private const val KEY_PROFILES = "profiles"
+        private const val KEY_CURRENT_PROFILE_ID = "current_profile_id"
 
         // Encrypted preferences keys
         private const val KEY_API_KEY = "api_key"
@@ -59,57 +68,162 @@ class SharedPrefsHelper(context: Context) {
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
-    // Language
+    private val json = Json { ignoreUnknownKeys = true }
+
+    // Profile Management
+    fun getProfiles(): List<ApiProfile> {
+        val profilesJson = prefs.getString(KEY_PROFILES, null)
+        return if (profilesJson != null) {
+            try {
+                json.decodeFromString<List<ApiProfile>>(profilesJson)
+            } catch (e: Exception) {
+                // If parsing fails, return default profile
+                listOf(ApiProfile.createDefault())
+            }
+        } else {
+            // Create default profile if none exist
+            val defaultProfile = ApiProfile.createDefault()
+            saveProfiles(listOf(defaultProfile))
+            setCurrentProfileId(defaultProfile.id)
+            listOf(defaultProfile)
+        }
+    }
+
+    private fun saveProfiles(profiles: List<ApiProfile>) {
+        val profilesJson = json.encodeToString(profiles)
+        prefs.edit { putString(KEY_PROFILES, profilesJson) }
+
+        // Save API keys separately in encrypted preferences
+        profiles.forEach { profile ->
+            if (profile.apiKey.isNotEmpty()) {
+                encryptedPrefs.edit { putString("profile_${profile.id}_api_key", profile.apiKey) }
+            }
+        }
+    }
+
+    fun addProfile(profile: ApiProfile): ApiProfile {
+        val profiles = getProfiles().toMutableList()
+        val newProfile = if (profile.id.isEmpty()) {
+            profile.copy(id = UUID.randomUUID().toString())
+        } else {
+            profile
+        }
+
+        profiles.add(newProfile)
+        saveProfiles(profiles)
+        return newProfile
+    }
+
+    fun updateProfile(profile: ApiProfile) {
+        val profiles = getProfiles().toMutableList()
+        val index = profiles.indexOfFirst { it.id == profile.id }
+        if (index != -1) {
+            profiles[index] = profile
+            saveProfiles(profiles)
+        }
+    }
+
+    fun deleteProfile(profileId: String) {
+        val profiles = getProfiles().toMutableList()
+        profiles.removeAll { it.id == profileId }
+
+        // If we deleted the current profile, switch to the first available
+        if (getCurrentProfileId() == profileId && profiles.isNotEmpty()) {
+            setCurrentProfileId(profiles.first().id)
+        }
+
+        saveProfiles(profiles)
+
+        // Remove the encrypted API key
+        encryptedPrefs.edit { remove("profile_${profileId}_api_key") }
+    }
+
+    fun getCurrentProfileId(): String {
+        return prefs.getString(KEY_CURRENT_PROFILE_ID, null) ?: run {
+            val profiles = getProfiles()
+            if (profiles.isNotEmpty()) {
+                profiles.first().id
+            } else {
+                "default"
+            }
+        }
+    }
+
+    fun setCurrentProfileId(profileId: String) {
+        prefs.edit { putString(KEY_CURRENT_PROFILE_ID, profileId) }
+    }
+
+    fun getCurrentProfile(): ApiProfile {
+        val profiles = getProfiles()
+        val currentId = getCurrentProfileId()
+        return profiles.find { it.id == currentId } ?: run {
+            if (profiles.isNotEmpty()) {
+                profiles.first()
+            } else {
+                ApiProfile.createDefault()
+            }
+        }
+    }
+
+    fun getCurrentProfileWithApiKey(): ApiProfile {
+        val profile = getCurrentProfile()
+        val apiKey = encryptedPrefs.getString("profile_${profile.id}_api_key", "") ?: ""
+        return profile.copy(apiKey = apiKey)
+    }
+
+    // Legacy methods that now work with current profile
     fun getLanguage(): String {
-        return prefs.getString(KEY_LANGUAGE, DEFAULT_LANGUAGE) ?: DEFAULT_LANGUAGE
+        return getCurrentProfile().language
     }
 
-    fun setLanguage(model: String) {
-        prefs.edit { putString(KEY_LANGUAGE, model) }
+    fun setLanguage(language: String) {
+        val currentProfile = getCurrentProfileWithApiKey()
+        updateProfile(currentProfile.copy(language = language))
     }
 
-    // API Model
     fun getApiModel(): String {
-        return prefs.getString(KEY_API_MODEL, DEFAULT_MODEL) ?: DEFAULT_MODEL
+        return getCurrentProfile().apiModel
     }
 
     fun setApiModel(model: String) {
-        prefs.edit { putString(KEY_API_MODEL, model) }
+        val currentProfile = getCurrentProfileWithApiKey()
+        updateProfile(currentProfile.copy(apiModel = model))
     }
 
-    // API Endpoint
     fun getApiEndpoint(): String {
-        return prefs.getString(KEY_API_ENDPOINT, DEFAULT_FREE_API_ENDPOINT) ?: DEFAULT_FREE_API_ENDPOINT
+        return getCurrentProfile().apiEndpoint
     }
 
     fun setApiEndpoint(endpoint: String) {
-        prefs.edit { putString(KEY_API_ENDPOINT, endpoint) }
+        val currentProfile = getCurrentProfileWithApiKey()
+        updateProfile(currentProfile.copy(apiEndpoint = endpoint))
     }
 
-    // API Key (Encrypted)
     fun getApiKey(): String {
-        return encryptedPrefs.getString(KEY_API_KEY, null) ?: ""
+        return getCurrentProfileWithApiKey().apiKey
     }
 
     fun setApiKey(apiKey: String) {
-        encryptedPrefs.edit { putString(KEY_API_KEY, apiKey) }
+        val currentProfile = getCurrentProfile()
+        updateProfile(currentProfile.copy(apiKey = apiKey))
     }
 
-    // Temperature
     fun getTemperature(): Float {
-        return prefs.getFloat(KEY_TEMPERATURE, DEFAULT_TEMPERATURE.toFloat())
+        return getCurrentProfile().temperature
     }
 
     fun setTemperature(temperature: Float) {
-        prefs.edit { putFloat(KEY_TEMPERATURE, temperature) }
+        val currentProfile = getCurrentProfileWithApiKey()
+        updateProfile(currentProfile.copy(temperature = temperature))
     }
 
     // Check if settings are configured
     fun isSettingsConfigured(): Boolean {
-        return getApiEndpoint().isNotEmpty() && getApiKey().isNotEmpty() && getApiModel().isNotEmpty()
+        val profile = getCurrentProfileWithApiKey()
+        return profile.apiEndpoint.isNotEmpty() && profile.apiKey.isNotEmpty() && profile.apiModel.isNotEmpty()
     }
 
-    // LLM Data Usage Disclosure
+    // LLM Data Usage Disclosure (remains global, not profile-specific)
     fun hasAcceptedLlmDisclosure(): Boolean {
         return prefs.getBoolean(KEY_LLM_DISCLOSURE_ACCEPTED, false)
     }
