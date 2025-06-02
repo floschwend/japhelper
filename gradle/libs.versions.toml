@@ -1,7 +1,7 @@
 [versions]
 activityComposeVersion = "1.10.1"
 appcompat = "1.7.0"
-composeBomVersion = "2025.04.01" # Using the newer one
+composeBomVersion = "2025.05.01" # Using the newer one
 constraintlayout = "2.2.1"
 converterGson = "2.9.0"
 gson = "2.10.1"
@@ -11,8 +11,8 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinxCoroutinesAndroid = "1.7.3"
 kotlinxSerializationJsonVersion = "1.2.2"
-lifecycleRuntimeKtx = "2.8.7"
-lifecycleRuntimeKtxVersion = "2.8.7"
+lifecycleRuntimeKtx = "2.9.0"
+lifecycleRuntimeKtxVersion = "2.9.0"
 loggingInterceptor = "4.11.0"
 material = "1.12.0"
 retrofit = "2.9.0"

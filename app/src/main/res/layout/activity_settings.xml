@@ -26,7 +26,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Profile"
+            android:text="@string/profile"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginBottom="8dp"/>
@@ -35,7 +35,7 @@
             android:id="@+id/currentProfileText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Current Profile: Default"
+            android:text="@string/current_profile_default"
             android:textSize="14sp"
             android:layout_marginBottom="8dp"/>
 
@@ -43,7 +43,7 @@
             android:id="@+id/manageProfilesButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Manage Profiles"
+            android:text="@string/manage_profiles"
             android:layout_marginBottom="24dp"/>
 
         <!-- Divider -->
@@ -166,7 +166,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:textSize="16sp"
-                android:text="0.70"/>
+                android:text="@string/temp_default"/>
 
         </LinearLayout>
 

@@ -31,6 +31,7 @@ import com.flo.japhelper.utils.SharedPrefsHelper
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import androidx.appcompat.app.AlertDialog
+import java.util.Locale
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -169,7 +170,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun updateTemperatureText(temperature: Float) {
-        temperatureValueText.text = String.format("%.2f", temperature)
+        temperatureValueText.text = String.format(locale = Locale.getDefault(), "%.2f", temperature)
     }
 
     private fun saveSettings() {

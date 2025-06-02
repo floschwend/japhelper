@@ -33,4 +33,8 @@
     <string name="email_subject">JapHelper Error</string>
     <string name="list_models_button">...</string>
     <string name="show_only_free_models">Show only free models</string>
+    <string name="profile">Profile</string>
+    <string name="current_profile_default">Current Profile: Default</string>
+    <string name="manage_profiles">Manage Profiles</string>
+    <string name="temp_default">0.70</string>
 </resources>
